@@ -1,0 +1,12 @@
+{
+  "description": "Raw skill sequence output from RuleBasedDanceComposer for a 12-second happy robot dance",
+  "sequence": [
+    {"skill": "stand_ready", "duration": 1.0},
+    {"skill": "arm_wave", "duration": 2.0},
+    {"skill": "body_sway", "duration": 1.5},
+    {"skill": "arm_wave", "duration": 2.0},
+    {"skill": "step_forward", "duration": 1.5},
+    {"skill": "turn_left", "duration": 1.5},
+    {"skill": "final_pose", "duration": 2.0}
+  ]
+}

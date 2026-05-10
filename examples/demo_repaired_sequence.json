@@ -1,0 +1,13 @@
+{
+  "description": "Repaired skill sequence output from TransitionManager — turn_left (medium risk) triggers stand_stable insertion after",
+  "sequence": [
+    {"skill": "stand_ready", "duration": 1.0, "source": "agent"},
+    {"skill": "arm_wave", "duration": 2.0, "source": "agent"},
+    {"skill": "body_sway", "duration": 1.5, "source": "agent"},
+    {"skill": "arm_wave", "duration": 2.0, "source": "agent"},
+    {"skill": "step_forward", "duration": 1.5, "source": "agent"},
+    {"skill": "turn_left", "duration": 1.5, "source": "agent"},
+    {"skill": "stand_stable", "duration": 0.8, "source": "transition_inserted"},
+    {"skill": "final_pose", "duration": 2.0, "source": "agent"}
+  ]
+}

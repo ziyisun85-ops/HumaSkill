@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=64.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "humaskill"
+version = "0.1.0"
+description = "Skill-level composition and execution harness for language-guided humanoid motion composition"
+requires-python = ">=3.10"
+dependencies = [
+    "pyyaml",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+]
+
+[tool.setuptools.packages.find]
+include = ["humaskill*"]

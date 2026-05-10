@@ -1,0 +1,4 @@
+fail_prob: 0.1
+backend: dummy
+default_duration: 12
+seed: 42

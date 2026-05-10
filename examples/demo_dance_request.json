@@ -1,0 +1,7 @@
+{
+  "text": "跳一段 12 秒的欢快机器人舞蹈",
+  "duration": 12.0,
+  "seed": 42,
+  "fail_prob": 0.1,
+  "backend": "dummy"
+}

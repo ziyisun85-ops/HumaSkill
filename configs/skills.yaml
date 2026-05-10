@@ -1,0 +1,155 @@
+- name: stand_ready
+  tags: [basic]
+  duration_range: [0.5, 2.0]
+  start_pose: any
+  end_pose: standing
+  risk: low
+  description: "Initial ready stance — standing upright, arms at sides, prepared for any motion"
+  backend: dummy
+  policy_id: null
+  checkpoint: null
+  action_type: null
+  obs_adapter: null
+
+- name: stand_stable
+  tags: [basic]
+  duration_range: [0.3, 1.5]
+  start_pose: any
+  end_pose: standing
+  risk: low
+  description: "Stabilization pose — standing balanced with feet shoulder-width apart, used to bridge transitions"
+  backend: dummy
+  policy_id: null
+  checkpoint: null
+  action_type: null
+  obs_adapter: null
+
+- name: stand_up
+  tags: [basic]
+  duration_range: [0.8, 2.0]
+  start_pose: low_pose
+  end_pose: standing
+  risk: medium
+  description: "Stand up from a low crouched pose to full standing — transition from low_pose to standing"
+  backend: dummy
+  policy_id: null
+  checkpoint: null
+  action_type: null
+  obs_adapter: null
+
+- name: final_pose
+  tags: [basic]
+  duration_range: [0.5, 3.0]
+  start_pose: standing
+  end_pose: standing
+  risk: low
+  description: "Final ending pose — standing tall with arms raised in a triumphant gesture"
+  backend: dummy
+  policy_id: null
+  checkpoint: null
+  action_type: null
+  obs_adapter: null
+
+- name: recover
+  tags: [basic]
+  duration_range: [1.0, 3.0]
+  start_pose: any
+  end_pose: standing
+  risk: medium
+  description: "Recovery maneuver — regain balance and return to stable standing after a failed execution"
+  backend: dummy
+  policy_id: null
+  checkpoint: null
+  action_type: null
+  obs_adapter: null
+
+- name: arm_wave
+  tags: [happy, dance]
+  duration_range: [0.5, 3.0]
+  start_pose: standing
+  end_pose: standing
+  risk: low
+  description: "Cheerful arm waving — alternating arms raised above head in a rhythmic happy pattern"
+  backend: dummy
+  policy_id: null
+  checkpoint: null
+  action_type: null
+  obs_adapter: null
+
+- name: body_sway
+  tags: [elegant, dance]
+  duration_range: [0.5, 3.0]
+  start_pose: standing
+  end_pose: standing
+  risk: low
+  description: "Graceful body swaying — smooth lateral torso movement with flowing arm gestures"
+  backend: dummy
+  policy_id: null
+  checkpoint: null
+  action_type: null
+  obs_adapter: null
+
+- name: step_forward
+  tags: [power, dance]
+  duration_range: [0.5, 2.0]
+  start_pose: standing
+  end_pose: standing
+  risk: low
+  description: "Powerful step forward — strong forward stride with grounded foot placement"
+  backend: dummy
+  policy_id: null
+  checkpoint: null
+  action_type: null
+  obs_adapter: null
+
+- name: step_backward
+  tags: [power, dance]
+  duration_range: [0.5, 2.0]
+  start_pose: standing
+  end_pose: standing
+  risk: low
+  description: "Powerful step backward — controlled backward stride with stable foot placement"
+  backend: dummy
+  policy_id: null
+  checkpoint: null
+  action_type: null
+  obs_adapter: null
+
+- name: turn_left
+  tags: [elegant, dance]
+  duration_range: [0.5, 2.0]
+  start_pose: standing
+  end_pose: standing
+  risk: medium
+  description: "Turn left — 90-degree rotation to the left with smooth pivot on the ball of the foot"
+  backend: dummy
+  policy_id: null
+  checkpoint: null
+  action_type: null
+  obs_adapter: null
+
+- name: turn_right
+  tags: [elegant, dance]
+  duration_range: [0.5, 2.0]
+  start_pose: standing
+  end_pose: standing
+  risk: medium
+  description: "Turn right — 90-degree rotation to the right with smooth pivot on the ball of the foot"
+  backend: dummy
+  policy_id: null
+  checkpoint: null
+  action_type: null
+  obs_adapter: null
+
+- name: squat
+  tags: [power, dance]
+  duration_range: [0.8, 3.0]
+  start_pose: standing
+  end_pose: low_pose
+  risk: high
+  description: "Deep squat — lowering from standing into a crouched low pose with knees bent and arms forward"
+  backend: dummy
+  policy_id: null
+  checkpoint: null
+  action_type: null
+  obs_adapter: null
