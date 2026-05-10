@@ -13,6 +13,7 @@ build/
 
 # Virtual environments
 .venv/
+.venv_linux_uv_backup/
 venv/
 env/
 
@@ -21,6 +22,16 @@ env/
 
 # Logs (keep directory, ignore JSON outputs)
 logs/*.json
+
+# Large local datasets and motion files
+external/
+data/
+motions/
+*.pkl
+*.npz
+*.npy
+*.fbx
+*.bvh
 
 # IDE
 .vscode/
