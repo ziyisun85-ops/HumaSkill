@@ -40,16 +40,26 @@ def _project_root() -> Path:
 # Backend factory
 # ---------------------------------------------------------------------------
 
-def create_backend(name: str, fail_prob: float, seed: int):
+SUPPORTED_BACKENDS = ("dummy", "motion_clip_mujoco")
+
+
+def create_backend(
+    name: str,
+    fail_prob: float,
+    seed: int,
+    viewer: bool = False,
+    viewer_fps: float = 30.0,
+    viewer_loop: bool = False,
+):
     """Create a backend instance by name.
 
-    Only ``"dummy"`` is implemented in MVP.  All other backend names
-    raise ``ValueError`` with a clear message.
-
     Args:
-        name: Backend name (``"dummy"`` in MVP).
+        name: Backend name.
         fail_prob: Probability of execution failure (0.0–1.0).
         seed: Random seed for reproducible failure patterns.
+        viewer: Whether to open the MuJoCo viewer for motion clip playback.
+        viewer_fps: Viewer playback FPS.
+        viewer_loop: Whether viewer playback should loop until closed.
 
     Returns:
         A ``BaseBackend`` instance.
@@ -61,8 +71,17 @@ def create_backend(name: str, fail_prob: float, seed: int):
         from humaskill.backends.dummy_backend import DummyDanceBackend
         return DummyDanceBackend(fail_prob=fail_prob, seed=seed)
 
+    if name == "motion_clip_mujoco":
+        from humaskill.backends.motion_clip_mujoco_backend import MotionClipMujocoBackend
+        return MotionClipMujocoBackend(
+            viewer=viewer,
+            viewer_fps=viewer_fps,
+            viewer_loop=viewer_loop,
+        )
+
+    supported = ", ".join(repr(backend) for backend in SUPPORTED_BACKENDS)
     raise ValueError(
-        f"Unknown backend: {name!r}. Supported backends: 'dummy'"
+        f"Unknown backend: {name!r}. Supported backends: {supported}"
     )
 
 
@@ -116,6 +135,22 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         type=str,
         default="dummy",
         help="Execution backend name (default: 'dummy').",
+    )
+    parser.add_argument(
+        "--viewer",
+        action="store_true",
+        help="Open MuJoCo viewer for motion_clip_mujoco playback.",
+    )
+    parser.add_argument(
+        "--viewer-fps",
+        type=float,
+        default=30.0,
+        help="MuJoCo viewer playback FPS (default: 30).",
+    )
+    parser.add_argument(
+        "--viewer-loop",
+        action="store_true",
+        help="Loop MuJoCo viewer playback until the viewer is closed.",
     )
     parser.add_argument(
         "--output",
@@ -178,7 +213,14 @@ def main(argv: list[str] | None = None) -> int:
 
     # 5. Execute
     try:
-        backend = create_backend(args.backend, args.fail_prob, args.seed)
+        backend = create_backend(
+            args.backend,
+            args.fail_prob,
+            args.seed,
+            viewer=args.viewer,
+            viewer_fps=args.viewer_fps,
+            viewer_loop=args.viewer_loop,
+        )
     except ValueError as exc:
         print(f"[ERROR] {exc}", file=sys.stderr)
         return 1
@@ -209,6 +251,9 @@ def main(argv: list[str] | None = None) -> int:
                 "seed": args.seed,
                 "fail_prob": args.fail_prob,
                 "backend": args.backend,
+                "viewer": args.viewer,
+                "viewer_fps": args.viewer_fps,
+                "viewer_loop": args.viewer_loop,
             },
             output_path=str(output_path),
         )

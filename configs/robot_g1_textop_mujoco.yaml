@@ -1,0 +1,14 @@
+robot_name: unitree_g1_textop_23dof
+model_dir: model/g1_description
+model_path: model/g1_description/g1_23dof.xml
+motion_dir: motions
+motion_fps: 30
+control_mode: qpos_playback
+motion_format: root_plus_dof
+root_fields:
+  translation: root_trans_offset
+  rotation: root_rot
+dof_field: dof
+expected_dof_dim: 23
+expected_qpos_dim: 30
+notes: "TextOp G1 23-DoF model selected for qpos playback of retargeted G1 motions."

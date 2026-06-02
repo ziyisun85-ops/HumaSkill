@@ -198,6 +198,13 @@ def test_empty_text_returns_minimal_sequence(
     assert seq_unknown[1]["skill"] == "final_pose"
 
 
+def test_dance_shorthand_includes_arm_wave(composer: RuleBasedDanceComposer) -> None:
+    """Dance shorthand used by viewer demos should include a playable arm clip."""
+    for text in ["\u8df3\u4e00\u6bb5\u821e", "\u8df3\u821e", "\u821e", "dance"]:
+        seq = composer.compose(text, duration=8.0, seed=42)
+        assert "arm_wave" in [item["skill"] for item in seq]
+
+
 # ---------------------------------------------------------------------------
 # Extra: BaseComposer is abstract, LLMComposer raises NotImplementedError
 # ---------------------------------------------------------------------------

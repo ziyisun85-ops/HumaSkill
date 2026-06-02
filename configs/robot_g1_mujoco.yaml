@@ -1,0 +1,12 @@
+robot_name: unitree_g1
+model_dir: model/unitree_g1
+model_path: model/unitree_g1/scene.xml
+preferred_xml:
+  - model/unitree_g1/scene.xml
+  - model/unitree_g1/g1.xml
+  - model/unitree_g1/g1_with_hands.xml
+  - model/unitree_g1/scene_table.xml
+motion_dir: motions
+motion_fps: 30
+control_mode: qpos_playback
+notes: "Initial config for inspecting and testing G1 motion clips in MuJoCo."

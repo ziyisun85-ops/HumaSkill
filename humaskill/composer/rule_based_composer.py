@@ -29,6 +29,9 @@ class RuleBasedDanceComposer(BaseComposer):
         "\u529b\u91cf": ["power"],                   # 力量
         "\u673a\u5668\u4eba": ["robot"],             # 机器人
         "\u821e\u8e48": ["dance"],                   # 舞蹈
+        "\u8df3\u821e": ["dance"],                   # 跳舞
+        "\u821e": ["dance"],                         # 舞
+        "dance": ["dance"],
     }
 
     # Skills that are never selected for the middle fill section.
@@ -109,6 +112,7 @@ class RuleBasedDanceComposer(BaseComposer):
         final_pose_dur = self._midpoint_duration("final_pose")
 
         bookend_total = stand_ready_dur + final_pose_dur
+        force_arm_wave = tags == {"dance"} and self._registry.has("arm_wave")
         middle_pool = self._build_middle_pool(tags)
 
         # Bookend items (always present).
@@ -121,6 +125,12 @@ class RuleBasedDanceComposer(BaseComposer):
 
         middle_items: list[dict] = []
         middle_total = 0.0
+
+        if force_arm_wave:
+            arm_wave_dur = self._midpoint_duration("arm_wave")
+            if bookend_total + arm_wave_dur <= target_duration + 3.0:
+                middle_items.append({"skill": "arm_wave", "duration": arm_wave_dur})
+                middle_total += arm_wave_dur
 
         # Keep filling until we are within ±3 s of target or would
         # overshoot by more than 3 s.
