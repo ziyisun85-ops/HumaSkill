@@ -1,0 +1,11 @@
+task_id: demo_walk_kick_crouch_stand
+
+sequence:
+  - skill: walk_forward
+    duration: 10.0
+
+  - skill: kick_leg
+
+  - skill: crouch_down
+
+  - skill: stand_up

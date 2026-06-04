@@ -1,0 +1,20 @@
+{
+  "segment_id": "skill_004_stand_up",
+  "segment_type": "skill",
+  "skill_name": "stand_up",
+  "success": true,
+  "num_frames": 370,
+  "source_motion_path": "assets/motions/walk_stand.pkl",
+  "start_frame": 0,
+  "end_frame": 222,
+  "target_duration": null,
+  "transition_type": null,
+  "from_skill": null,
+  "to_skill": null,
+  "failed_reason": null,
+  "final_root_pos": [
+    -2.6710293292999268,
+    3.121779441833496,
+    0.7854725122451782
+  ]
+}

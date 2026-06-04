@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="HumaSkill: a three-layer GMT harness for continuous humanoid robot skill execution."
+    />
+    <title>HumaSkill | Continuous Humanoid Skill Execution</title>
+    <link rel="icon" href="data:," />
+    <link rel="preload" href="site/styles.css" as="style" />
+    <link rel="stylesheet" href="site/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="HumaSkill home">
+        <span class="brand-mark"></span>
+        <span>HumaSkill</span>
+      </a>
+      <nav class="top-nav" aria-label="Page navigation">
+        <a href="#demo">Demo</a>
+        <a href="#method">Method</a>
+        <a href="#results">Results</a>
+        <a href="#motions">Motions</a>
+        <a href="#run">Run</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero section-shell">
+        <div class="hero-copy">
+          <p class="eyebrow">GMT-based humanoid control harness</p>
+          <h1>HumaSkill</h1>
+          <p class="subtitle">
+            A three-layer execution harness that chains semantic humanoid skills
+            into one continuous MuJoCo episode without resetting the robot state.
+          </p>
+          <div class="hero-actions" aria-label="Project links">
+            <a class="button primary" href="#demo">Watch Demo</a>
+            <a class="button" href="Documentation.md">Documentation</a>
+            <a class="button" href="outputs/contract/GMT_obs_reference_contract.md">GMT Contract</a>
+          </div>
+          <div class="hero-stats" aria-label="Demo statistics">
+            <div>
+              <strong>7</strong>
+              <span>tracked segments</span>
+            </div>
+            <div>
+              <strong>0</strong>
+              <span>failed segments</span>
+            </div>
+            <div>
+              <strong>8</strong>
+              <span>GMT motion assets</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero-visual" aria-label="HumaSkill pipeline visualization">
+          <img src="site/assets/humaskill-hero.png" alt="Stylized humanoid skill execution pipeline" />
+        </div>
+      </section>
+
+      <section id="demo" class="video-section">
+        <div class="section-shell narrow">
+          <p class="eyebrow">Current project effect</p>
+          <h2>Walk, kick, crouch, and stand as one continuous rollout.</h2>
+          <p class="section-lead">
+            The harness parses a fixed skill plan, selects GMT reference motions,
+            inserts transition references, and tracks every segment in the same
+            live simulator state.
+          </p>
+        </div>
+        <div class="video-frame">
+          <video
+            controls
+            playsinline
+            muted
+            loop
+            poster="site/assets/humaskill-hero.png"
+            preload="metadata"
+          >
+            <source src="outputs/demo_walk_kick_crouch_stand_comparison.mp4" type="video/mp4" />
+          </video>
+        </div>
+      </section>
+
+      <section id="method" class="section-shell method">
+        <div class="section-heading">
+          <p class="eyebrow">Architecture</p>
+          <h2>Three layers, one simulator episode.</h2>
+        </div>
+        <div class="pipeline" aria-label="HumaSkill architecture pipeline">
+          <article>
+            <span>01</span>
+            <h3>Task Plan</h3>
+            <p>Reads YAML skill sequences and validates every semantic skill against the registry.</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>Middle Architecture</h3>
+            <p>Loads GMT motion clips, slices references, matches skills, and builds transition segments.</p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>Low Level Execution</h3>
+            <p>Wraps GMT as an importable runner and tracks consecutive references without resetting MuJoCo.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="results" class="results-band">
+        <div class="section-shell results-layout">
+          <div>
+            <p class="eyebrow">Execution log</p>
+            <h2>Every segment in the first demo completed successfully.</h2>
+            <p class="section-lead">
+              The recorded run contains four skills and three transitions. Each
+              segment returns a true success flag and no failed reason.
+            </p>
+          </div>
+          <div class="result-table" role="table" aria-label="Demo execution segments">
+            <div role="row">
+              <span>skill_001</span>
+              <strong>walk_forward</strong>
+              <em>499 frames</em>
+            </div>
+            <div role="row">
+              <span>transition_001</span>
+              <strong>stable stand bridge</strong>
+              <em>428 frames</em>
+            </div>
+            <div role="row">
+              <span>skill_002</span>
+              <strong>kick_leg</strong>
+              <em>333 frames</em>
+            </div>
+            <div role="row">
+              <span>transition_002</span>
+              <strong>kick to crouch</strong>
+              <em>16 frames</em>
+            </div>
+            <div role="row">
+              <span>skill_003</span>
+              <strong>crouch_down</strong>
+              <em>253 frames</em>
+            </div>
+            <div role="row">
+              <span>transition_003</span>
+              <strong>crouch to stand</strong>
+              <em>32 frames</em>
+            </div>
+            <div role="row">
+              <span>skill_004</span>
+              <strong>stand_up</strong>
+              <em>370 frames</em>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="motions" class="section-shell motions">
+        <div class="section-heading">
+          <p class="eyebrow">Motion assets</p>
+          <h2>Built from the GMT motion set already in the repository.</h2>
+        </div>
+        <div class="motion-grid">
+          <article><strong>basic_walk.pkl</strong><span>walking reference</span></article>
+          <article><strong>airkick_stand.pkl</strong><span>standing kick</span></article>
+          <article><strong>squat.pkl</strong><span>crouch movement</span></article>
+          <article><strong>walk_stand.pkl</strong><span>standing bridge</span></article>
+          <article><strong>crouchwalk_stand.pkl</strong><span>crouch bridge</span></article>
+          <article><strong>kick_walk.pkl</strong><span>alternate kick</span></article>
+          <article><strong>dance.pkl</strong><span>extra skill asset</span></article>
+          <article><strong>dance_waltz.pkl</strong><span>extra skill asset</span></article>
+        </div>
+      </section>
+
+      <section id="run" class="section-shell run-panel">
+        <div>
+          <p class="eyebrow">Run locally</p>
+          <h2>Reproduce the harness sequence.</h2>
+          <p class="section-lead">
+            Point `configs/harness.yaml` at a valid GMT checkout, then execute
+            the fixed sequence script from the repository root.
+          </p>
+        </div>
+        <pre><code>python scripts/run_harness_sequence.py</code></pre>
+      </section>
+    </main>
+
+    <footer>
+      <span>HumaSkill</span>
+      <a href="#top">Back to top</a>
+    </footer>
+  </body>
+</html>
+

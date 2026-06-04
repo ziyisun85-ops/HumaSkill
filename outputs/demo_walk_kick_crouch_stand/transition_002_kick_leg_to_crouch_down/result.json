@@ -1,0 +1,20 @@
+{
+  "segment_id": "transition_002_kick_leg_to_crouch_down",
+  "segment_type": "transition",
+  "skill_name": null,
+  "success": true,
+  "num_frames": 16,
+  "source_motion_path": null,
+  "start_frame": null,
+  "end_frame": null,
+  "target_duration": null,
+  "transition_type": "interpolation",
+  "from_skill": "kick_leg",
+  "to_skill": "crouch_down",
+  "failed_reason": null,
+  "final_root_pos": [
+    -1.587780237197876,
+    1.3852338790893555,
+    0.7524003386497498
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "segment_id": "skill_002_kick_leg",
+  "segment_type": "skill",
+  "skill_name": "kick_leg",
+  "success": true,
+  "num_frames": 333,
+  "source_motion_path": "assets/motions/airkick_stand.pkl",
+  "start_frame": 0,
+  "end_frame": 200,
+  "target_duration": null,
+  "transition_type": null,
+  "from_skill": null,
+  "to_skill": null,
+  "failed_reason": null,
+  "final_root_pos": [
+    -1.623870611190796,
+    1.5721490383148193,
+    0.7752541899681091
+  ]
+}

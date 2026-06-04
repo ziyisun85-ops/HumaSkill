@@ -1,0 +1,22 @@
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+.venv/
+venv/
+env/
+*.egg-info/
+
+.DS_Store
+Thumbs.db
+.deepseek/
+
+# Local simulator caches and heavy state dumps.
+outputs/**/robot_state_final.npz
+outputs/screenshots/

@@ -1,0 +1,72 @@
+[
+  {
+    "segment_id": "skill_001_walk_forward",
+    "segment_type": "skill",
+    "skill_name": "walk_forward",
+    "success": true,
+    "num_frames": 499,
+    "source_motion_path": "assets/motions/basic_walk.pkl",
+    "log_path": "outputs\\demo_walk_kick_crouch_stand\\skill_001_walk_forward\\result.json",
+    "failed_reason": null
+  },
+  {
+    "segment_id": "transition_001_walk_forward_to_kick_leg",
+    "segment_type": "transition",
+    "skill_name": null,
+    "success": true,
+    "num_frames": 428,
+    "source_motion_path": "assets/motions/walk_stand.pkl",
+    "log_path": "outputs\\demo_walk_kick_crouch_stand\\transition_001_walk_forward_to_kick_leg\\result.json",
+    "failed_reason": null
+  },
+  {
+    "segment_id": "skill_002_kick_leg",
+    "segment_type": "skill",
+    "skill_name": "kick_leg",
+    "success": true,
+    "num_frames": 333,
+    "source_motion_path": "assets/motions/airkick_stand.pkl",
+    "log_path": "outputs\\demo_walk_kick_crouch_stand\\skill_002_kick_leg\\result.json",
+    "failed_reason": null
+  },
+  {
+    "segment_id": "transition_002_kick_leg_to_crouch_down",
+    "segment_type": "transition",
+    "skill_name": null,
+    "success": true,
+    "num_frames": 16,
+    "source_motion_path": null,
+    "log_path": "outputs\\demo_walk_kick_crouch_stand\\transition_002_kick_leg_to_crouch_down\\result.json",
+    "failed_reason": null
+  },
+  {
+    "segment_id": "skill_003_crouch_down",
+    "segment_type": "skill",
+    "skill_name": "crouch_down",
+    "success": true,
+    "num_frames": 253,
+    "source_motion_path": "assets/motions/squat.pkl",
+    "log_path": "outputs\\demo_walk_kick_crouch_stand\\skill_003_crouch_down\\result.json",
+    "failed_reason": null
+  },
+  {
+    "segment_id": "transition_003_crouch_down_to_stand_up",
+    "segment_type": "transition",
+    "skill_name": null,
+    "success": true,
+    "num_frames": 32,
+    "source_motion_path": null,
+    "log_path": "outputs\\demo_walk_kick_crouch_stand\\transition_003_crouch_down_to_stand_up\\result.json",
+    "failed_reason": null
+  },
+  {
+    "segment_id": "skill_004_stand_up",
+    "segment_type": "skill",
+    "skill_name": "stand_up",
+    "success": true,
+    "num_frames": 370,
+    "source_motion_path": "assets/motions/walk_stand.pkl",
+    "log_path": "outputs\\demo_walk_kick_crouch_stand\\skill_004_stand_up\\result.json",
+    "failed_reason": null
+  }
+]
