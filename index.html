@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="HumaSkill: a three-layer GMT harness for continuous humanoid robot skill execution."
+      content="HumaSkill: a universal harness for continuous humanoid robot skill execution."
     />
     <title>HumaSkill | Continuous Humanoid Skill Execution</title>
     <link rel="icon" href="data:," />
@@ -24,22 +24,24 @@
         <a href="#results">Results</a>
         <a href="#motions">Motions</a>
         <a href="#run">Run</a>
+        <a href="https://github.com/ziyisun85-ops/HumaSkill">GitHub</a>
       </nav>
     </header>
 
     <main id="top">
       <section class="hero section-shell">
         <div class="hero-copy">
-          <p class="eyebrow">GMT-based humanoid control harness</p>
+          <p class="eyebrow">Universal humanoid skill execution harness</p>
           <h1>HumaSkill</h1>
           <p class="subtitle">
-            A three-layer execution harness that chains semantic humanoid skills
-            into one continuous MuJoCo episode without resetting the robot state.
+            A universal execution harness for chaining humanoid skills across
+            pluggable tracking models.
           </p>
           <div class="hero-actions" aria-label="Project links">
             <a class="button primary" href="#demo">Watch Demo</a>
+            <a class="button" href="https://github.com/ziyisun85-ops/HumaSkill">GitHub Repo</a>
             <a class="button" href="Documentation.md">Documentation</a>
-            <a class="button" href="outputs/contract/GMT_obs_reference_contract.md">GMT Contract</a>
+            <a class="button" href="outputs/contract/GMT_obs_reference_contract.md">First Model Contract</a>
           </div>
           <div class="hero-stats" aria-label="Demo statistics">
             <div>
@@ -52,7 +54,7 @@
             </div>
             <div>
               <strong>8</strong>
-              <span>GMT motion assets</span>
+              <span>first-model motion assets</span>
             </div>
           </div>
         </div>
@@ -66,9 +68,9 @@
           <p class="eyebrow">Current project effect</p>
           <h2>Walk, kick, crouch, and stand as one continuous rollout.</h2>
           <p class="section-lead">
-            The harness parses a fixed skill plan, selects GMT reference motions,
-            inserts transition references, and tracks every segment in the same
-            live simulator state.
+            The harness parses a fixed skill plan, selects references from the
+            active tracking model, inserts transition references, and executes
+            every segment in the same live simulator state.
           </p>
         </div>
         <div class="video-frame">
@@ -99,12 +101,12 @@
           <article>
             <span>02</span>
             <h3>Middle Architecture</h3>
-            <p>Loads GMT motion clips, slices references, matches skills, and builds transition segments.</p>
+            <p>Loads model-specific references, slices clips, matches skills, and builds transition segments.</p>
           </article>
           <article>
             <span>03</span>
             <h3>Low Level Execution</h3>
-            <p>Wraps GMT as an importable runner and tracks consecutive references without resetting MuJoCo.</p>
+            <p>Wraps each control model behind a runner interface and tracks consecutive references without resetting state.</p>
           </article>
         </div>
       </section>
@@ -162,7 +164,7 @@
       <section id="motions" class="section-shell motions">
         <div class="section-heading">
           <p class="eyebrow">Motion assets</p>
-          <h2>Built from the GMT motion set already in the repository.</h2>
+          <h2>The first integrated model contributes the current motion set.</h2>
         </div>
         <div class="motion-grid">
           <article><strong>basic_walk.pkl</strong><span>walking reference</span></article>
@@ -181,8 +183,8 @@
           <p class="eyebrow">Run locally</p>
           <h2>Reproduce the harness sequence.</h2>
           <p class="section-lead">
-            Point `configs/harness.yaml` at a valid GMT checkout, then execute
-            the fixed sequence script from the repository root.
+            Point `configs/harness.yaml` at the active model backend, then
+            execute the fixed sequence script from the repository root.
           </p>
         </div>
         <pre><code>python scripts/run_harness_sequence.py</code></pre>
@@ -191,8 +193,8 @@
 
     <footer>
       <span>HumaSkill</span>
+      <a href="https://github.com/ziyisun85-ops/HumaSkill">GitHub Repository</a>
       <a href="#top">Back to top</a>
     </footer>
   </body>
 </html>
-
