@@ -10,13 +10,23 @@
     "failed_reason": null
   },
   {
-    "segment_id": "transition_001_walk_forward_to_kick_leg",
+    "segment_id": "transition_001_walk_forward_to_kick_leg_body",
     "segment_type": "transition",
     "skill_name": null,
     "success": true,
-    "num_frames": 428,
+    "num_frames": 403,
     "source_motion_path": "assets/motions/walk_stand.pkl",
-    "log_path": "outputs\\demo_walk_kick_crouch_stand\\transition_001_walk_forward_to_kick_leg\\result.json",
+    "log_path": "outputs\\demo_walk_kick_crouch_stand\\transition_001_walk_forward_to_kick_leg_body\\result.json",
+    "failed_reason": null
+  },
+  {
+    "segment_id": "transition_001_walk_forward_to_kick_leg_post",
+    "segment_type": "transition",
+    "skill_name": null,
+    "success": true,
+    "num_frames": 24,
+    "source_motion_path": null,
+    "log_path": "outputs\\demo_walk_kick_crouch_stand\\transition_001_walk_forward_to_kick_leg_post\\result.json",
     "failed_reason": null
   },
   {

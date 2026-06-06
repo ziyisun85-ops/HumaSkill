@@ -1,0 +1,20 @@
+{
+  "segment_id": "transition_001_walk_forward_to_kick_leg_body",
+  "segment_type": "transition",
+  "skill_name": null,
+  "success": true,
+  "num_frames": 403,
+  "source_motion_path": "assets/motions/walk_stand.pkl",
+  "start_frame": 0,
+  "end_frame": 222,
+  "target_duration": null,
+  "transition_type": "bridge_body",
+  "from_skill": "walk_forward",
+  "to_skill": "kick_leg",
+  "failed_reason": null,
+  "final_root_pos": [
+    -3.030475378036499,
+    2.336839437484741,
+    0.7854907512664795
+  ]
+}

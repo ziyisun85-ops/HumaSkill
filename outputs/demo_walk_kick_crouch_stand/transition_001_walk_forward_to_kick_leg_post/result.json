@@ -1,0 +1,20 @@
+{
+  "segment_id": "transition_001_walk_forward_to_kick_leg_post",
+  "segment_type": "transition",
+  "skill_name": null,
+  "success": true,
+  "num_frames": 24,
+  "source_motion_path": null,
+  "start_frame": null,
+  "end_frame": null,
+  "target_duration": null,
+  "transition_type": "bridge_post",
+  "from_skill": "walk_forward",
+  "to_skill": "kick_leg",
+  "failed_reason": null,
+  "final_root_pos": [
+    -3.1532089710235596,
+    2.0220084190368652,
+    0.67420494556427
+  ]
+}

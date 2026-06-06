@@ -83,20 +83,42 @@ class HarnessOrchestrator:
             if previous_skill is not None:
                 transition_count += 1
                 transition_spec = self.transition_registry.get(previous_skill, item.skill)
-                transition_segment = self.transition_builder.build_transition(
-                    transition_spec,
-                    state,
-                    skill_spec,
-                )
-                transition_segment.segment_id = (
-                    f"transition_{transition_count:03d}_{previous_skill}_to_{item.skill}"
-                )
-                result = self._execute_segment(transition_segment, task_output_dir)
-                results.append(result)
-                state = result.final_state
-                if not result.success and self.stop_on_failure:
-                    self._write_summary(skill_plan.task_id, results, task_output_dir)
-                    return results
+                tag = f"transition_{transition_count:03d}_{previous_skill}_to_{item.skill}"
+
+                if transition_spec.mode == "bridge":
+                    body_seg = self.transition_builder.build_bridge_body(
+                        transition_spec, state, skill_spec
+                    )
+                    body_seg.segment_id = f"{tag}_body"
+                    body_result = self._execute_segment(body_seg, task_output_dir)
+                    results.append(body_result)
+                    state = body_result.final_state
+                    if not body_result.success and self.stop_on_failure:
+                        self._write_summary(skill_plan.task_id, results, task_output_dir)
+                        return results
+
+                    post_seg = self.transition_builder.build_bridge_post(
+                        transition_spec, state, skill_spec
+                    )
+                    if post_seg is not None:
+                        post_seg.segment_id = f"{tag}_post"
+                        post_result = self._execute_segment(post_seg, task_output_dir)
+                        results.append(post_result)
+                        state = post_result.final_state
+                        if not post_result.success and self.stop_on_failure:
+                            self._write_summary(skill_plan.task_id, results, task_output_dir)
+                            return results
+                else:
+                    transition_segment = self.transition_builder.build_transition(
+                        transition_spec, state, skill_spec,
+                    )
+                    transition_segment.segment_id = tag
+                    result = self._execute_segment(transition_segment, task_output_dir)
+                    results.append(result)
+                    state = result.final_state
+                    if not result.success and self.stop_on_failure:
+                        self._write_summary(skill_plan.task_id, results, task_output_dir)
+                        return results
 
             skill_segment = ReferenceSegment(
                 segment_id=f"skill_{index:03d}_{item.skill}",
