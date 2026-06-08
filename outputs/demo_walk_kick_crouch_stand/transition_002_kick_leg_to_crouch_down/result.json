@@ -3,7 +3,7 @@
   "segment_type": "transition",
   "skill_name": null,
   "success": true,
-  "num_frames": 16,
+  "num_frames": 20,
   "source_motion_path": null,
   "start_frame": null,
   "end_frame": null,
@@ -13,8 +13,28 @@
   "to_skill": "crouch_down",
   "failed_reason": null,
   "final_root_pos": [
-    -2.131176471710205,
-    0.8155956268310547,
-    0.7242478132247925
-  ]
+    1.8553063869476318,
+    -1.6232908964157104,
+    0.7816676497459412
+  ],
+  "metrics": {
+    "maje": 0.042266327887773514,
+    "root_height_error": 0.005099266767501831,
+    "root_pos_error": 0.008061492815613747,
+    "root_rot_error": 0.04064931347966194,
+    "velocity_error": 0.052875857800245285,
+    "accel_error": 0.8852661848068237,
+    "success_margin": 0.5782541513442994,
+    "phase_lag_frame": -9,
+    "num_steps": 20
+  },
+  "transition_metrics": {
+    "seam_vel_delta": 0.006365928798913956,
+    "seam_accel_delta": 0.44799041748046875,
+    "peak_jerk": 3.086172580718994,
+    "mean_jerk": 3.06001193523407,
+    "auj": 1.020004172961713,
+    "interpolation_mode": "hermite",
+    "num_frames": 24
+  }
 }

@@ -9,6 +9,7 @@ from typing import Optional
 import numpy as np
 import torch
 
+from middle_architecture.evaluation import EvaluationBuffer, SegmentMetrics, compute_segment_metrics
 from middle_architecture.robot_state import ReferenceFrames, RobotState
 
 
@@ -19,6 +20,7 @@ class RunnerTrackResult:
     log_path: Optional[str] = None
     video_path: Optional[str] = None
     failed_reason: Optional[str] = None
+    metrics: Optional[SegmentMetrics] = None
 
 
 @dataclass
@@ -238,7 +240,7 @@ class GMTTrackingRunner:
         self.model = None
         self.data = None
         self.policy_jit = None
-        self.viewer = None
+        self.split_viewer = None
         self.initialized = False
 
         self.sim_duration = 60.0
@@ -421,10 +423,9 @@ class GMTTrackingRunner:
         self.policy_jit = torch.jit.load(str(policy_path), map_location=self.torch_device)
         self.policy_jit.eval()
         if self.render:
-            import mujoco_viewer
+            from low_level_execution.split_viewer import SplitScreenViewer
 
-            self.viewer = mujoco_viewer.MujocoViewer(self.model, self.data)
-            self.viewer.cam.distance = 5.0
+            self.split_viewer = SplitScreenViewer(self.model, self.data, num_dofs=self.num_dofs)
         self.last_action = np.zeros(self.num_actions, dtype=np.float32)
         self.pd_target = self.default_dof_pos.copy()
         self.proprio_history_buf.clear()
@@ -445,12 +446,22 @@ class GMTTrackingRunner:
             dof_vel=qvel[-self.num_dofs :].copy(),
         )
 
+    def _sample_reference_at_step(
+        self, sampler: "_ReferenceSampler", control_step: int
+    ):
+        t = np.array([control_step * self.control_dt], dtype=np.float32)
+        root_pos, root_rot, root_vel, _, dof_pos, _ = sampler.sample(t)
+        return root_pos[0], root_rot[0], dof_pos[0], root_vel[0]
+
     def track(self, reference_frames: ReferenceFrames) -> RunnerTrackResult:
         self._require_initialized()
         sampler = _ReferenceSampler(reference_frames)
         num_control_steps = max(1, int(math.ceil(sampler.length / self.control_dt)))
+        _buffer = EvaluationBuffer()
 
         for control_step in range(num_control_steps):
+            ref_rp, ref_rr, ref_dof, ref_vel = self._sample_reference_at_step(sampler, control_step)
+
             obs = self._build_observation(sampler, control_step)
             obs_tensor = torch.from_numpy(obs).float().unsqueeze(0).to(self.torch_device)
             with torch.no_grad():
@@ -463,16 +474,38 @@ class GMTTrackingRunner:
             for _ in range(self.sim_decimation):
                 self._step_mujoco_physics()
 
-            self._render_frame()
+            self._render_frame(ref_rp, ref_rr, ref_dof)
+
+            state = self.get_robot_state()
+            _buffer.record(
+                step=control_step,
+                tracked_root_pos=state.root_pos,
+                tracked_root_quat_wxyz=state.root_quat,
+                tracked_dof_pos=state.dof_pos,
+                tracked_lin_vel=state.root_lin_vel,
+                ref_root_pos=ref_rp,
+                ref_root_rot_xyzw=ref_rr,
+                ref_dof_pos=ref_dof,
+                ref_lin_vel=ref_vel,
+            )
 
             if self._has_fallen():
+                metrics = compute_segment_metrics(
+                    _buffer, self.control_dt, self.fall_config.min_root_height,
+                    reference_fps=sampler.fps,
+                )
                 return RunnerTrackResult(
                     success=False,
                     num_frames=control_step + 1,
                     failed_reason="fell",
+                    metrics=metrics,
                 )
 
-        return RunnerTrackResult(success=True, num_frames=num_control_steps)
+        metrics = compute_segment_metrics(
+            _buffer, self.control_dt, self.fall_config.min_root_height,
+            reference_fps=sampler.fps,
+        )
+        return RunnerTrackResult(success=True, num_frames=num_control_steps, metrics=metrics)
 
     def _require_initialized(self):
         if not self.initialized:
@@ -537,11 +570,12 @@ class GMTTrackingRunner:
         self.data.ctrl[:] = torque
         mujoco.mj_step(self.model, self.data)
 
-    def _render_frame(self):
-        if self.viewer is None:
+    def _render_frame(self, ref_rp=None, ref_rr=None, ref_dof=None):
+        if self.split_viewer is None:
             return
-        self.viewer.cam.lookat = self.data.qpos.astype(np.float32)[:3]
-        self.viewer.render()
+        if ref_rp is not None:
+            self.split_viewer.update_reference(ref_rp, ref_rr, ref_dof)
+        self.split_viewer.render()
 
     def _has_fallen(self) -> bool:
         if not self.fall_config.enabled:

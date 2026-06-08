@@ -3,6 +3,13 @@ from typing import Any, Dict, Optional
 
 import numpy as np
 
+DEFAULT_SCORE_WEIGHTS: Dict[str, float] = {
+    "dof_pos": 1.0,
+    "root_quat": 0.5,
+    "velocity": 0.3,
+    "root_height": 0.2,
+}
+
 
 @dataclass
 class ReferenceFrames:
@@ -46,3 +53,21 @@ class RobotState:
     root_lin_vel: np.ndarray
     root_ang_vel: np.ndarray
     dof_vel: np.ndarray
+
+
+@dataclass
+class MatchConfig:
+    mode: str = "static"
+    search_window: int = 60
+    score_weights: Optional[Dict[str, float]] = None
+
+
+@dataclass
+class TransitionMetrics:
+    seam_vel_delta: float
+    seam_accel_delta: float
+    peak_jerk: float
+    mean_jerk: float
+    auj: float
+    interpolation_mode: str
+    num_frames: int

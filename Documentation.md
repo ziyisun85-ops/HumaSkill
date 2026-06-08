@@ -1,7 +1,269 @@
-# Documentation — HumaSkill 第一版活文档
+# Documentation — HumaSkill Living Project Record
 
-> 本文档随开发进度持续更新。每个 milestone 完成后立刻更新状态，记录关键决策和已知局限。
-> 它是给未来的你（和其他开发者）的"为什么这样做"和"怎么跑起来"。
+> This document is updated continuously. After each milestone completes, update status, record key decisions, and capture the latest validation results. See `Prompt.md` for improvement objectives and `Plan.md` for the current milestone roadmap.
+
+---
+
+## Current State (Improvement Phase)
+
+**Phase:** Post-v1 improvement pass completed. M1 transition jerk reduction, M2 bridge post-interp fix, M3 pose-search calibration, and M4 final validation sweep are applied and validated.
+
+**Pipeline:** `walk_forward (10s) → [bridge] → kick_leg → [hermite] → crouch_down → [hermite] → stand_up`
+
+**Last full run:** 2026-06-08. All 8 segments succeeded with `pose_search` enabled and no fall detection trigger. Latest metrics below.
+
+### Baseline Metrics (Pre-Improvement)
+
+| Metric | Value | Target |
+|--------|-------|--------|
+| Mean MAJE | 0.0625 | maintain |
+| Mean seam velocity delta | 0.110 m/s | ≤ 0.10 |
+| transition_002 peak jerk | **22.7** | < 5.0 |
+| transition_002 AUJ | **6.03** | < 2.0 |
+| skill_003 success margin | **0.284** | > 0.25 |
+| Min success margin (all) | 0.284 | > 0.25 |
+
+### Latest Metrics (Post-M4)
+
+| Metric | Value | Target |
+|--------|-------|--------|
+| Mean MAJE | 0.0622 | maintain |
+| Mean seam velocity delta | 0.0178 m/s | <= 0.10 |
+| transition_002 peak jerk | **3.086** | < 5.0 |
+| transition_002 AUJ | **1.020** | < 2.0 |
+| skill_003 success margin | **0.2838** | > 0.25 |
+| Min success margin (all) | 0.2838 | > 0.25 |
+
+### Improvement Milestone Status
+
+| Milestone | Status | Notes |
+|-----------|--------|-------|
+| M1 — Fix transition_002 hermite jerk | ✅ Completed | `transition_002` now uses Hermite tension `0.1` over 24 frames; peak jerk 2.983, AUJ 0.979 |
+| M2 — Bridge post-interp real state | ✅ Completed | Bridge post starts from real runner state and uses velocity-aware Hermite; seam velocity 0.023 |
+| M3 — Calibrate pose_search matching | ✅ Completed | Global `pose_search` enabled; active weights validated; crouch margin remains > 0.25 |
+| M4 — Full pipeline re-run | ✅ Completed | All Prompt.md done-when criteria met on final run |
+
+### M1 Validation Results (2026-06-08)
+
+Changed `configs/transitions.yaml` for `kick_leg -> crouch_down`: kept Hermite interpolation, lowered `hermite_tension` to `0.1`, and increased `num_frames` from 20 to 24. Propagation through `TransitionRegistry` and `TransitionBuilder._build_interp_frames()` was inspected and already correct; no code change was needed for routing.
+
+Decision: tension tuning alone reduced AUJ but could not reliably bring peak jerk under target at 20 frames. A no-edit diagnostic showed root velocity tangents were modest, while the 20-frame cubic duration still had a minimum peak jerk above target. The scoped fix was to lengthen only `transition_002` to 24 frames.
+
+Validation commands:
+
+```text
+conda activate gmt; python scripts/validate_hermite.py
+-> exit 0; Hermite boundary and C1 continuity checks passed.
+
+conda activate gmt; python scripts/run_harness_sequence.py --config configs/harness.yaml --sequence configs/sequences/demo_walk_kick_crouch_stand.yaml --skills configs/skills.yaml --transitions configs/transitions.yaml
+-> exit 0; all 8 segments reported success=True.
+```
+
+Fresh `outputs/demo_walk_kick_crouch_stand/transition_002_kick_leg_to_crouch_down/result.json`:
+
+| Metric | Target | Actual |
+|--------|--------|--------|
+| peak_jerk | < 5.0 | 2.983 |
+| AUJ | < 2.0 | 0.979 |
+| seam_vel_delta | <= 0.10 | 0.0068 |
+
+### M2 Validation Results (2026-06-08)
+
+Inspected `middle_architecture/harness_orchestrator.py`, `middle_architecture/transition_builder.py`, and `low_level_execution/gmt_tracking_runner.py`. The bridge-body call site already carried `body_result.final_state` into `build_bridge_post()`, and `GMTTrackingRunner.get_robot_state()` already populated `root_lin_vel`, `root_ang_vel`, and `dof_vel`.
+
+Decision: the remaining bridge-post seam velocity came from linear post interpolation discarding the real runner velocity and failing to match the kick entry velocity. `build_bridge_post()` now uses velocity-aware Hermite with tension `1.0` when the bridge exit state is a real state with velocity fields; bridge body and configured interpolation transitions keep their existing behavior.
+
+Validation commands:
+
+```text
+conda activate gmt; python scripts/run_harness_sequence.py --config configs/harness.yaml --sequence configs/sequences/demo_walk_kick_crouch_stand.yaml --skills configs/skills.yaml --transitions configs/transitions.yaml
+-> exit 0; all 8 segments reported success=True.
+
+conda activate gmt; python -m py_compile middle_architecture/transition_builder.py middle_architecture/harness_orchestrator.py low_level_execution/gmt_tracking_runner.py
+-> exit 0.
+```
+
+Fresh `outputs/demo_walk_kick_crouch_stand/transition_001_walk_forward_to_kick_leg_post/result.json`:
+
+| Metric | Target | Actual |
+|--------|--------|--------|
+| seam_vel_delta | <= 0.10 | 0.0231 |
+| first post frame vs. runner bridge-exit root_pos | <= 0.01 m | 0.0 m in diagnostic |
+| segment success | true | true |
+
+### M3 Validation Results (2026-06-08)
+
+Changed `configs/harness.yaml` to enable global `pose_search` and updated score weights to emphasize crouch height:
+
+```yaml
+matching:
+  mode: pose_search
+  search_window: 60
+  score_weights:
+    dof_pos: 1.0
+    root_quat: 0.3
+    velocity: 0.2
+    root_height: 0.8
+```
+
+Updated `scripts/validate_matcher.py` to load the active harness weights and assert that a known-good frame scores below a frame at least 10 frames away.
+
+Validation commands:
+
+```text
+conda activate gmt; python scripts/validate_matcher.py
+-> exit 0; pose_search selected frame 10; score frame 10 = 0.151137, frame 25 = 0.351137.
+
+conda activate gmt; python scripts/run_harness_sequence.py --config configs/harness.yaml --sequence configs/sequences/demo_walk_kick_crouch_stand.yaml --skills configs/skills.yaml --transitions configs/transitions.yaml
+-> exit 0; all 8 segments reported success=True.
+```
+
+Fresh runtime observations:
+
+| Metric | Baseline | Actual |
+|--------|----------|--------|
+| `skill_003_crouch_down` success_margin | 0.284 | 0.2817 |
+| `skill_001_walk_forward` success_margin | 0.571 | 0.5675 |
+| min success_margin | > 0.25 target | 0.2817 |
+
+Decision: global `pose_search` is acceptable for now because it introduced no falls, kept `walk_forward` above the 0.45 regression threshold from `Implement.md`, and kept all margins above the Prompt target. The crouch margin did not improve in this run, so this remains a calibration area rather than a confirmed quality gain.
+
+### M4 Final Validation Results (2026-06-08)
+
+Validation commands:
+
+```text
+conda activate gmt; python scripts/validate_hermite.py
+-> exit 0.
+
+conda activate gmt; python scripts/validate_matcher.py
+-> exit 0.
+
+conda activate gmt; python scripts/validate_metrics.py
+-> exit 0.
+
+conda activate gmt; python scripts/run_harness_sequence.py --config configs/harness.yaml --sequence configs/sequences/demo_walk_kick_crouch_stand.yaml --skills configs/skills.yaml --transitions configs/transitions.yaml
+-> exit 0; all 8 segments reported success=True.
+```
+
+Final done-when check from `outputs/demo_walk_kick_crouch_stand/summary_metrics.json`:
+
+| Criterion | Target | Actual |
+|-----------|--------|--------|
+| Full pipeline success | true | true |
+| `transition_002` peak_jerk | < 5.0 | 2.768 |
+| `transition_002` AUJ | < 2.0 | 0.907 |
+| Mean seam_vel_delta | <= 0.10 | 0.0227 |
+| Min success_margin | > 0.25 | 0.2817 |
+| All segment success flags | true | true |
+
+### Transition Orientation Fix (2026-06-08)
+
+Follow-up investigation found two continuity issues around action seams:
+
+1. Bridge body reference frames were appended in raw pkl coordinates after a reanchored pre-interp segment. This caused a synthetic test offset by yaw/XY to produce a `5.385m` XY jump and `109.58deg` yaw jump at the pre->bridge seam.
+2. The next skill clip was matched and reanchored before executing the transition. In the real sequence, `walk_forward -> kick_leg` produced a post-transition yaw mismatch of about `124deg` and an XY mismatch of about `3.10m` against the next skill's first reference frame.
+
+Fixes:
+
+- `TransitionBuilder.build_bridge_body()` and the combined bridge path now reanchor the full bridge motion slice to the same root/yaw target used by the pre-interp endpoint.
+- `HarnessOrchestrator.execute()` now performs skill matching, slicing, and `reanchor_reference_frames()` after the transition has executed, so the next skill starts from the latest real `RobotState`.
+- `walk_forward -> kick_leg` `post_bridge_interp_frames` was increased from 15 to 24 to keep bridge-post jerk low after the coordinate/yaw fix.
+
+New validation commands:
+
+```text
+conda activate gmt; python scripts/validate_transition_alignment.py
+-> exit 0; bridge body xy_jump=0.0m, yaw_jump=0.0deg.
+
+conda activate gmt; python scripts/validate_orchestrator_reanchor_timing.py
+-> exit 0; second skill first root is reanchored to the post-transition state.
+```
+
+Full validation after the fix:
+
+```text
+conda activate gmt; python scripts/validate_transition_alignment.py
+conda activate gmt; python scripts/validate_orchestrator_reanchor_timing.py
+conda activate gmt; python scripts/validate_hermite.py
+conda activate gmt; python scripts/validate_matcher.py
+conda activate gmt; python scripts/validate_metrics.py
+conda activate gmt; python scripts/run_harness_sequence.py --config configs/harness.yaml --sequence configs/sequences/demo_walk_kick_crouch_stand.yaml --skills configs/skills.yaml --transitions configs/transitions.yaml
+-> all exited 0; all 8 runtime segments reported success=True.
+```
+
+Fresh post-fix observations:
+
+| Metric | Before orientation fix | After orientation fix |
+|--------|------------------------|-----------------------|
+| `walk_forward -> kick_leg` skill-start yaw mismatch | 123.95deg | 0.0deg |
+| `walk_forward -> kick_leg` skill-start XY mismatch | 3.10m | 0.0m |
+| Mean root position error | 0.696 | 0.170 |
+| Mean root rotation error | 0.482 | 0.163 |
+| `transition_001_post` peak jerk | 8.90 before post-frame retune | 2.816 |
+| `transition_001_post` AUJ | 3.27 before post-frame retune | 1.878 |
+| Mean seam_vel_delta | 0.0227 | 0.0178 |
+
+---
+
+## How to Run
+
+### Environment Setup
+
+```bash
+conda activate gmt
+cd G:\Code\Python\HumaSkill
+```
+
+### Full Pipeline
+
+```bash
+python scripts/run_harness_sequence.py \
+  --config configs/harness.yaml \
+  --sequence configs/sequences/demo_walk_kick_crouch_stand.yaml \
+  --skills configs/skills.yaml \
+  --transitions configs/transitions.yaml
+```
+
+Output: `outputs/demo_walk_kick_crouch_stand/`
+
+### Unit Validation Scripts
+
+```bash
+python scripts/validate_hermite.py     # Hermite boundary conditions and C1 continuity
+python scripts/validate_matcher.py     # Static and pose_search frame selection
+python scripts/validate_metrics.py     # Segment metrics computation
+```
+
+### Single Motion Test
+
+```bash
+python scripts/run_single_gmt_motion.py --motion walk_stand.pkl --duration 5.0
+```
+
+---
+
+## Open Questions (Post-Improvement)
+
+1. **Can pose_search improve crouch margin rather than only preserve it?** M3 enabled global pose_search and kept `skill_003_crouch_down` above target, but the margin remains close to baseline at 0.2838. Further calibration may need per-skill windows or scoring terms.
+2. **What is the right warning threshold for `success_margin`?** Current floor is 0.25; crouch_down remains marginal at 0.2838. Consider logging a warning at 0.30.
+
+---
+
+## Known Issues (Improvement Phase)
+
+| ID | Issue | Severity | Improvement Milestone |
+|----|-------|----------|-----------------------|
+| P1 | Resolved in M1: `transition_002` peak_jerk reduced to 2.983 with Hermite tension 0.1 over 24 frames | High | M1 |
+| P2 | Resolved in M2: bridge post starts from real runner state and preserves velocity continuity with Hermite post interpolation | Medium | M2 |
+| P3 | Resolved for M3 acceptance: `pose_search` enabled globally and score ordering validated; crouch margin stayed above target but did not improve | Low-Med | M3 |
+| P4 | Resolved: bridge body and next-skill clips now reanchor with post-transition root position/yaw, eliminating observed action seam yaw/XY mismatch | High | Orientation fix |
+
+---
+
+## v1 Delivery Record (Historical)
+
+> Original Chinese milestone log preserved below. v1 delivered on 2026-06-03; all M0–M5 milestones completed.
 
 ---
 

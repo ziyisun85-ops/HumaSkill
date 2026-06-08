@@ -28,8 +28,8 @@ sequence:
 
 reference_contract:
   status: completed_m0
-  root_reference_mode: root_relative
-  reanchor_skill_clip: false
+  root_reference_mode: absolute_root
+  reanchor_skill_clip: true
   reanchor_yaw_only: true
   reference_velocity_policy: derive_like_motion_lib
   local_body_pos_policy: preserve_not_used_by_runner_obs
@@ -47,6 +47,15 @@ fall_detection:
   enabled: true
   min_root_height: 0.20
   max_body_tilt: 120.0
+
+matching:
+  mode: pose_search         # "static" | "pose_search"
+  search_window: 60
+  score_weights:
+    dof_pos: 1.0
+    root_quat: 0.3
+    velocity: 0.2
+    root_height: 0.8
 
 platform:
   verified:

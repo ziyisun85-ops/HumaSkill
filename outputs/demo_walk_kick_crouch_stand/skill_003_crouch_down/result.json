@@ -3,9 +3,9 @@
   "segment_type": "skill",
   "skill_name": "crouch_down",
   "success": true,
-  "num_frames": 253,
+  "num_frames": 228,
   "source_motion_path": "assets/motions/squat.pkl",
-  "start_frame": 0,
+  "start_frame": 30,
   "end_frame": 304,
   "target_duration": null,
   "transition_type": null,
@@ -13,8 +13,20 @@
   "to_skill": null,
   "failed_reason": null,
   "final_root_pos": [
-    -2.128234624862671,
-    0.7355384230613708,
-    0.7865374684333801
-  ]
+    1.8709747791290283,
+    -1.6258149147033691,
+    0.7857670187950134
+  ],
+  "metrics": {
+    "maje": 0.08987405151128769,
+    "root_height_error": 0.0068441168405115604,
+    "root_pos_error": 0.04164103791117668,
+    "root_rot_error": 0.11967340111732483,
+    "velocity_error": 0.08967819809913635,
+    "accel_error": 0.9383352994918823,
+    "success_margin": 0.28380106687545775,
+    "phase_lag_frame": 0,
+    "num_steps": 228
+  },
+  "transition_metrics": null
 }

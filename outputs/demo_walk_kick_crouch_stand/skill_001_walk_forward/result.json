@@ -5,16 +5,28 @@
   "success": true,
   "num_frames": 499,
   "source_motion_path": "assets/motions/basic_walk.pkl",
-  "start_frame": 0,
-  "end_frame": 300,
+  "start_frame": 60,
+  "end_frame": 360,
   "target_duration": 10.0,
   "transition_type": null,
   "from_skill": null,
   "to_skill": null,
   "failed_reason": null,
   "final_root_pos": [
-    -1.5730860233306885,
-    -0.14500252902507782,
-    0.7736101150512695
-  ]
+    -1.4928315877914429,
+    0.2050120085477829,
+    0.796445906162262
+  ],
+  "metrics": {
+    "maje": 0.0715835839509964,
+    "root_height_error": 0.19838199019432068,
+    "root_pos_error": 0.7882354259490967,
+    "root_rot_error": 0.648786723613739,
+    "velocity_error": 0.4434051215648651,
+    "accel_error": 2.7194597721099854,
+    "success_margin": 0.5674866914749146,
+    "phase_lag_frame": -15,
+    "num_steps": 499
+  },
+  "transition_metrics": null
 }

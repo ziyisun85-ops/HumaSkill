@@ -6,17 +6,21 @@ transitions:
     mode: bridge
     bridge_skill: stable_stand_bridge
     pre_bridge_interp_frames: 20
-    post_bridge_interp_frames: 15
+    post_bridge_interp_frames: 24
     reason: walking_to_standing_kick_needs_stable_stand_reference
 
   - from_skill: kick_leg
     to_skill: crouch_down
     mode: interpolation
-    num_frames: 20
+    num_frames: 24
+    interpolation_mode: hermite
+    hermite_tension: 0.1
     reason: standing_kick_to_squat_uses_short_interpolation
 
   - from_skill: crouch_down
     to_skill: stand_up
     mode: interpolation
     num_frames: 20
+    interpolation_mode: hermite
+    hermite_tension: 0.8
     reason: squat_to_standing_uses_short_interpolation

@@ -14,6 +14,8 @@ class TransitionSpec:
     pre_bridge_interp_frames: Optional[int] = None
     post_bridge_interp_frames: Optional[int] = None
     reason: str = ""
+    interpolation_mode: str = "linear"
+    hermite_tension: float = 1.0
 
 
 class TransitionRegistry:
@@ -39,6 +41,8 @@ class TransitionRegistry:
                 pre_bridge_interp_frames=raw.get("pre_bridge_interp_frames"),
                 post_bridge_interp_frames=raw.get("post_bridge_interp_frames"),
                 reason=str(raw.get("reason", "")),
+                interpolation_mode=str(raw.get("interpolation_mode", "linear")),
+                hermite_tension=float(raw.get("hermite_tension", 1.0)),
             )
             for attr in ["num_frames", "pre_bridge_interp_frames", "post_bridge_interp_frames"]:
                 value = getattr(spec, attr)

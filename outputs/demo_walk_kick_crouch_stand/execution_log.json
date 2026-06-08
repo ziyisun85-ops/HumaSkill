@@ -24,7 +24,7 @@
     "segment_type": "transition",
     "skill_name": null,
     "success": true,
-    "num_frames": 24,
+    "num_frames": 39,
     "source_motion_path": null,
     "log_path": "outputs\\demo_walk_kick_crouch_stand\\transition_001_walk_forward_to_kick_leg_post\\result.json",
     "failed_reason": null
@@ -34,7 +34,7 @@
     "segment_type": "skill",
     "skill_name": "kick_leg",
     "success": true,
-    "num_frames": 333,
+    "num_frames": 317,
     "source_motion_path": "assets/motions/airkick_stand.pkl",
     "log_path": "outputs\\demo_walk_kick_crouch_stand\\skill_002_kick_leg\\result.json",
     "failed_reason": null
@@ -44,7 +44,7 @@
     "segment_type": "transition",
     "skill_name": null,
     "success": true,
-    "num_frames": 16,
+    "num_frames": 20,
     "source_motion_path": null,
     "log_path": "outputs\\demo_walk_kick_crouch_stand\\transition_002_kick_leg_to_crouch_down\\result.json",
     "failed_reason": null
@@ -54,7 +54,7 @@
     "segment_type": "skill",
     "skill_name": "crouch_down",
     "success": true,
-    "num_frames": 253,
+    "num_frames": 228,
     "source_motion_path": "assets/motions/squat.pkl",
     "log_path": "outputs\\demo_walk_kick_crouch_stand\\skill_003_crouch_down\\result.json",
     "failed_reason": null
@@ -74,7 +74,7 @@
     "segment_type": "skill",
     "skill_name": "stand_up",
     "success": true,
-    "num_frames": 370,
+    "num_frames": 368,
     "source_motion_path": "assets/motions/walk_stand.pkl",
     "log_path": "outputs\\demo_walk_kick_crouch_stand\\skill_004_stand_up\\result.json",
     "failed_reason": null

@@ -13,8 +13,20 @@
   "to_skill": "kick_leg",
   "failed_reason": null,
   "final_root_pos": [
-    -3.030475378036499,
-    2.336839437484741,
-    0.7854907512664795
-  ]
+    1.6451903581619263,
+    -1.7475026845932007,
+    0.7859707474708557
+  ],
+  "metrics": {
+    "maje": 0.06255869567394257,
+    "root_height_error": 0.005975513719022274,
+    "root_pos_error": 0.26880979537963867,
+    "root_rot_error": 0.12750160694122314,
+    "velocity_error": 0.1445821225643158,
+    "accel_error": 1.6330126523971558,
+    "success_margin": 0.5493157982826233,
+    "phase_lag_frame": 1,
+    "num_steps": 403
+  },
+  "transition_metrics": null
 }

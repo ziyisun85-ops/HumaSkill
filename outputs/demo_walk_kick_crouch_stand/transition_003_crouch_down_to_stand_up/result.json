@@ -13,8 +13,28 @@
   "to_skill": "stand_up",
   "failed_reason": null,
   "final_root_pos": [
-    -2.191577911376953,
-    0.47378167510032654,
-    0.7846462726593018
-  ]
+    1.891096830368042,
+    -1.5953543186187744,
+    0.7839559316635132
+  ],
+  "metrics": {
+    "maje": 0.03200313821434975,
+    "root_height_error": 0.008173812180757523,
+    "root_pos_error": 0.007679194677621126,
+    "root_rot_error": 0.01692592352628708,
+    "velocity_error": 0.07214805483818054,
+    "accel_error": 0.61393141746521,
+    "success_margin": 0.583516526222229,
+    "phase_lag_frame": 6,
+    "num_steps": 32
+  },
+  "transition_metrics": {
+    "seam_vel_delta": 0.03366902843117714,
+    "seam_accel_delta": 1.683181881904602,
+    "peak_jerk": 2.0868747234344482,
+    "mean_jerk": 2.0814588516950607,
+    "auj": 1.112622951795972,
+    "interpolation_mode": "hermite",
+    "num_frames": 20
+  }
 }

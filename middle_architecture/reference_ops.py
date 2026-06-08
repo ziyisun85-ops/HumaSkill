@@ -1,9 +1,9 @@
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Tuple
 
 import numpy as np
 
 from middle_architecture.gmt_motion_adapter import GMTMotion
-from middle_architecture.robot_state import KinematicFrame, ReferenceFrames, RobotState
+from middle_architecture.robot_state import KinematicFrame, ReferenceFrames, RobotState, TransitionMetrics
 
 
 def _normalize_quat_xyzw(q: np.ndarray) -> np.ndarray:
@@ -172,6 +172,212 @@ def concat_reference_frames(list_of_reference_frames: Iterable[ReferenceFrames])
         root_rot=np.concatenate([item.root_rot for item in frames], axis=0),
         dof_pos=np.concatenate([item.dof_pos for item in frames], axis=0),
         local_body_pos=local_body_pos,
+    )
+
+
+def _derive_frame_velocity(
+    motion: GMTMotion, frame_idx: int
+) -> Tuple[np.ndarray, np.ndarray]:
+    fps = float(motion.fps)
+    n = motion.num_frames
+    if n < 2:
+        return np.zeros(3, dtype=np.float32), np.zeros(motion.dof_pos.shape[1], dtype=np.float32)
+    if frame_idx <= 0:
+        root_vel = fps * (motion.root_pos[1] - motion.root_pos[0])
+        dof_vel = fps * (motion.dof_pos[1] - motion.dof_pos[0])
+    elif frame_idx >= n - 1:
+        root_vel = fps * (motion.root_pos[-1] - motion.root_pos[-2])
+        dof_vel = fps * (motion.dof_pos[-1] - motion.dof_pos[-2])
+    else:
+        root_vel = fps * (motion.root_pos[frame_idx + 1] - motion.root_pos[frame_idx - 1]) / 2.0
+        dof_vel = fps * (motion.dof_pos[frame_idx + 1] - motion.dof_pos[frame_idx - 1]) / 2.0
+    return root_vel.astype(np.float32), dof_vel.astype(np.float32)
+
+
+def hermite_interpolate_reference_frames(
+    start,
+    start_lin_vel: np.ndarray,
+    start_dof_vel: np.ndarray,
+    target_frame,
+    target_lin_vel: np.ndarray,
+    target_dof_vel: np.ndarray,
+    num_frames: int,
+    fps: float,
+    tension: float = 1.0,
+    start_ang_vel: Optional[np.ndarray] = None,
+    target_ang_vel: Optional[np.ndarray] = None,
+) -> ReferenceFrames:
+    if num_frames <= 0:
+        raise ValueError("num_frames must be positive")
+
+    s = _as_kinematic_view(start)
+    t = _as_kinematic_view(target_frame)
+    T = num_frames / fps
+
+    alpha = np.linspace(0.0, 1.0, num_frames, dtype=np.float32)
+    a2 = alpha ** 2
+    a3 = alpha ** 3
+
+    h00 = 2.0 * a3 - 3.0 * a2 + 1.0
+    h10 = a3 - 2.0 * a2 + alpha
+    h01 = -2.0 * a3 + 3.0 * a2
+    h11 = a3 - a2
+
+    p0 = np.asarray(s.root_pos, dtype=np.float32)
+    p1 = np.asarray(t.root_pos, dtype=np.float32)
+    m0_pos = np.asarray(start_lin_vel, dtype=np.float32) * T * tension
+    m1_pos = np.asarray(target_lin_vel, dtype=np.float32) * T * tension
+    root_pos = (
+        h00[:, None] * p0[None, :]
+        + h10[:, None] * m0_pos[None, :]
+        + h01[:, None] * p1[None, :]
+        + h11[:, None] * m1_pos[None, :]
+    ).astype(np.float32)
+
+    d0 = np.asarray(s.dof_pos, dtype=np.float32)
+    d1 = np.asarray(t.dof_pos, dtype=np.float32)
+    m0_dof = np.asarray(start_dof_vel, dtype=np.float32) * T * tension
+    m1_dof = np.asarray(target_dof_vel, dtype=np.float32) * T * tension
+    dof_pos = (
+        h00[:, None] * d0[None, :]
+        + h10[:, None] * m0_dof[None, :]
+        + h01[:, None] * d1[None, :]
+        + h11[:, None] * m1_dof[None, :]
+    ).astype(np.float32)
+
+    # Velocity-aware cubic reparameterization of SLERP
+    q0 = _normalize_quat_xyzw(np.asarray(s.root_quat, dtype=np.float32))
+    q1 = _normalize_quat_xyzw(np.asarray(t.root_quat, dtype=np.float32))
+    dot = float(np.clip(np.dot(q0, q1), -1.0, 1.0))
+    if dot < 0.0:
+        q1 = -q1
+        dot = -dot
+    theta_total = float(np.arccos(np.clip(dot, -1.0, 1.0)))
+
+    if theta_total > 1e-6 and start_ang_vel is not None and target_ang_vel is not None:
+        omega_0 = float(np.linalg.norm(start_ang_vel))
+        omega_1 = float(np.linalg.norm(target_ang_vel))
+        d0_rot = omega_0 * T / theta_total
+        d1_rot = omega_1 * T / theta_total
+        m0_alpha = np.float32(d0_rot * tension)
+        m1_alpha = np.float32(d1_rot * tension)
+        rot_alpha = (
+            h00 * 0.0
+            + h10 * m0_alpha
+            + h01 * alpha
+            + h11 * m1_alpha
+        )
+        rot_alpha = np.clip(rot_alpha, 0.0, 1.0).astype(np.float32)
+    else:
+        rot_alpha = alpha
+
+    root_rot = _slerp_xyzw(q0, q1, rot_alpha)
+
+    local_body_pos = None
+    if s.local_body_pos is not None and t.local_body_pos is not None:
+        local_body_pos = (
+            (1.0 - alpha[:, None, None]) * np.asarray(s.local_body_pos, dtype=np.float32)[None, :, :]
+            + alpha[:, None, None] * np.asarray(t.local_body_pos, dtype=np.float32)[None, :, :]
+        )
+    elif t.local_body_pos is not None:
+        local_body_pos = np.repeat(
+            np.asarray(t.local_body_pos, dtype=np.float32)[None, :, :], num_frames, axis=0
+        )
+
+    return ReferenceFrames(
+        fps=float(fps),
+        root_pos=root_pos,
+        root_rot=root_rot.astype(np.float32),
+        dof_pos=dof_pos,
+        local_body_pos=local_body_pos.astype(np.float32) if local_body_pos is not None else None,
+    )
+
+
+def compute_transition_metrics(
+    transition_frames: ReferenceFrames,
+    next_skill_frames: ReferenceFrames,
+    interpolation_mode: str,
+) -> TransitionMetrics:
+    fps = float(transition_frames.fps)
+    dt = 1.0 / fps
+    pos = transition_frames.root_pos  # (N, 3)
+    N = pos.shape[0]
+
+    def _vel(p):
+        v = np.zeros_like(p)
+        if p.shape[0] < 2:
+            return v
+        v[0] = fps * (p[1] - p[0])
+        v[-1] = fps * (p[-1] - p[-2])
+        if p.shape[0] > 2:
+            v[1:-1] = fps * (p[2:] - p[:-2]) / 2.0
+        return v
+
+    def _accel(p):
+        a = np.zeros_like(p)
+        if p.shape[0] < 3:
+            return a
+        a[1:-1] = (p[2:] - 2.0 * p[1:-1] + p[:-2]) / (dt ** 2)
+        a[0] = a[1]
+        a[-1] = a[-2]
+        return a
+
+    trans_vel = _vel(pos)
+    trans_accel = _accel(pos)
+
+    # Jerk from third finite difference (requires ≥5 frames)
+    jerk_norms = np.zeros(N, dtype=np.float64)
+    if N >= 5:
+        for i in range(2, N - 2):
+            j = (pos[i + 2] - 2.0 * pos[i + 1] + 2.0 * pos[i - 1] - pos[i - 2]) / (2.0 * dt ** 3)
+            jerk_norms[i] = float(np.linalg.norm(j))
+        valid = jerk_norms[2:N - 2]
+        peak_jerk = float(np.max(valid)) if valid.size > 0 else 0.0
+        mean_jerk = float(np.mean(valid)) if valid.size > 0 else 0.0
+        auj = float(np.sum(valid) * dt)
+    else:
+        peak_jerk = 0.0
+        mean_jerk = 0.0
+        auj = 0.0
+
+    # Seam metrics: compare end of transition to start of next skill
+    n_next = next_skill_frames.root_pos.shape[0]
+    if n_next >= 2:
+        next_vel = _vel(next_skill_frames.root_pos)
+        next_accel = _accel(next_skill_frames.root_pos)
+        seam_vel_delta = float(np.linalg.norm(trans_vel[-1] - next_vel[0]))
+        seam_accel_delta = float(np.linalg.norm(trans_accel[-1] - next_accel[1] if n_next > 2 else next_accel[0]))
+    else:
+        seam_vel_delta = 0.0
+        seam_accel_delta = 0.0
+
+    return TransitionMetrics(
+        seam_vel_delta=seam_vel_delta,
+        seam_accel_delta=seam_accel_delta,
+        peak_jerk=peak_jerk,
+        mean_jerk=mean_jerk,
+        auj=auj,
+        interpolation_mode=interpolation_mode,
+        num_frames=N,
+    )
+
+
+def reanchor_kinematic_frame(target_frame, current_state) -> KinematicFrame:
+    """Align target_frame XY+yaw to current_state while preserving target Z and joint posture."""
+    target = _as_kinematic_view(target_frame)
+    current = _as_kinematic_view(current_state)
+    current_pos = np.asarray(current.root_pos, dtype=np.float32)
+    target_pos = np.asarray(target.root_pos, dtype=np.float32)
+    new_pos = np.array([current_pos[0], current_pos[1], target_pos[2]], dtype=np.float32)
+    current_yaw = _yaw_from_xyzw(np.asarray(current.root_quat, dtype=np.float32))
+    target_yaw = _yaw_from_xyzw(np.asarray(target.root_quat, dtype=np.float32))
+    delta_q = _yaw_quat_xyzw(current_yaw - target_yaw)
+    new_quat = _quat_mul_xyzw(delta_q, np.asarray(target.root_quat, dtype=np.float32))
+    return KinematicFrame(
+        root_pos=new_pos,
+        root_quat=new_quat,
+        dof_pos=np.asarray(target.dof_pos, dtype=np.float32),
+        local_body_pos=target.local_body_pos,
     )
 
 
