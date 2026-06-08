@@ -45,8 +45,7 @@ current_state = RobotState(
 )
 
 spec = transitions.get("walk_forward", "kick_leg")
-next_skill = skills.get("kick_leg")
-segment = builder.build_bridge_body(spec, current_state, next_skill)
+segment = builder.build_bridge_body(spec, current_state)
 frames = segment.reference_frames
 
 pre_frames = int(spec.pre_bridge_interp_frames or 0)

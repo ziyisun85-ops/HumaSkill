@@ -68,36 +68,29 @@ def _zero_velocity_state_from_kinematic_frame(frame: KinematicFrame) -> RobotSta
     )
 
 
-def _frame_from_reference_frames(frames, frame_idx: int) -> KinematicFrame:
-    local_body_pos = None
-    if frames.local_body_pos is not None:
-        local_body_pos = frames.local_body_pos[frame_idx].copy()
-    return KinematicFrame(
-        root_pos=frames.root_pos[frame_idx].copy(),
-        root_quat=frames.root_rot[frame_idx].copy(),
-        dof_pos=frames.dof_pos[frame_idx].copy(),
-        local_body_pos=local_body_pos,
-    )
-
-
 class TransitionBuilder:
     def __init__(self, motion_source, motion_adapter):
         self.motion_source = motion_source
         self.motion_adapter = motion_adapter
         self._fallback_registry = None
 
-    def build_transition(self, transition_spec, current_state, next_skill_spec) -> ReferenceSegment:
+    def build_transition(
+        self, transition_spec, current_state, next_skill_spec, target_frame_idx=None
+    ) -> ReferenceSegment:
         if transition_spec.mode == "interpolation":
             return self.build_interpolation_transition(
-                transition_spec, current_state, next_skill_spec
+                transition_spec, current_state, next_skill_spec, target_frame_idx=target_frame_idx
             )
-        if transition_spec.mode == "bridge":
-            return self.build_bridge_transition(transition_spec, current_state, next_skill_spec)
         raise ValueError(f"Unsupported transition mode: {transition_spec.mode}")
 
-    def build_interpolation_transition(self, spec, current_state, next_skill_spec) -> ReferenceSegment:
+    def build_interpolation_transition(
+        self, spec, current_state, next_skill_spec, target_frame_idx=None
+    ) -> ReferenceSegment:
         next_motion = self.motion_adapter.load(next_skill_spec.motion_file)
-        target_frame_idx = int(next_skill_spec.default_start_frame)
+        if target_frame_idx is None:
+            target_frame_idx = int(next_skill_spec.default_start_frame)
+        else:
+            target_frame_idx = int(target_frame_idx)
         target_frame = get_kinematic_frame(next_motion, target_frame_idx)
         num_frames = spec.num_frames or 20
         frames = self._build_interp_frames(
@@ -117,72 +110,7 @@ class TransitionBuilder:
             metadata={"num_frames": num_frames, "transition_metrics": trans_metrics},
         )
 
-    def build_bridge_transition(self, spec, current_state, next_skill_spec) -> ReferenceSegment:
-        if not spec.bridge_skill:
-            raise ValueError("bridge transition requires bridge_skill")
-
-        bridge_skill_spec = self._get_skill_spec(spec.bridge_skill)
-        bridge_motion = self.motion_adapter.load(bridge_skill_spec.motion_file)
-        bridge_start = int(bridge_skill_spec.default_start_frame)
-        bridge_end = bridge_skill_spec.default_end_frame or bridge_motion.num_frames
-        bridge_entry = get_kinematic_frame(bridge_motion, bridge_start)
-        anchored_bridge_entry = reanchor_kinematic_frame(bridge_entry, current_state)
-        bridge_anchor_state = _zero_velocity_state_from_kinematic_frame(anchored_bridge_entry)
-        bridge_frames = reanchor_reference_frames(
-            slice_motion_to_reference_frames(bridge_motion, bridge_start, bridge_end),
-            bridge_anchor_state,
-            {"root_reference_mode": "absolute_root", "reanchor_yaw_only": True},
-        )
-        bridge_exit = _frame_from_reference_frames(bridge_frames, -1)
-
-        next_motion = self.motion_adapter.load(next_skill_spec.motion_file)
-        next_entry_idx = int(next_skill_spec.default_start_frame)
-        target_entry = get_kinematic_frame(next_motion, next_entry_idx)
-
-        pre_frames = spec.pre_bridge_interp_frames or 0
-        post_frames = spec.post_bridge_interp_frames or 0
-        parts = []
-        if pre_frames > 0:
-            parts.append(
-                self._build_interp_frames(
-                    spec, current_state, bridge_entry, bridge_motion, bridge_start,
-                    pre_frames, bridge_motion.fps,
-                )
-            )
-        parts.append(bridge_frames)
-        if post_frames > 0:
-            parts.append(
-                self._build_interp_frames(
-                    spec, bridge_exit, target_entry, next_motion, next_entry_idx,
-                    post_frames, bridge_motion.fps,
-                )
-            )
-
-        frames = concat_reference_frames(parts)
-        next_skill_frames = slice_motion_to_reference_frames(next_motion, next_entry_idx, min(next_entry_idx + 5, next_motion.num_frames))
-        trans_metrics = compute_transition_metrics(frames, next_skill_frames, spec.interpolation_mode)
-        return ReferenceSegment(
-            segment_id=f"transition_{spec.from_skill}_to_{spec.to_skill}",
-            segment_type="transition",
-            skill_name=None,
-            reference_frames=frames,
-            source_motion_path=bridge_skill_spec.motion_file,
-            start_frame=bridge_start,
-            end_frame=bridge_end,
-            transition_type="bridge",
-            from_skill=spec.from_skill,
-            to_skill=spec.to_skill,
-            reason=spec.reason,
-            metadata={
-                "bridge_skill": spec.bridge_skill,
-                "pre_bridge_interp_frames": pre_frames,
-                "post_bridge_interp_frames": post_frames,
-                "post_is_kinematic_bridge_exit_to_target_entry": True,
-                "transition_metrics": trans_metrics,
-            },
-        )
-
-    def build_bridge_body(self, spec, current_state, next_skill_spec) -> ReferenceSegment:
+    def build_bridge_body(self, spec, current_state) -> ReferenceSegment:
         if not spec.bridge_skill:
             raise ValueError("bridge transition requires bridge_skill")
 
@@ -230,7 +158,7 @@ class TransitionBuilder:
             },
         )
 
-    def build_bridge_post(self, spec, bridge_exit_state, next_skill_spec):
+    def build_bridge_post(self, spec, bridge_exit_state, next_skill_spec, target_frame_idx=None):
         post_frames = spec.post_bridge_interp_frames or 0
         if post_frames <= 0:
             return None
@@ -238,7 +166,10 @@ class TransitionBuilder:
         bridge_skill_spec = self._get_skill_spec(spec.bridge_skill)
         bridge_motion = self.motion_adapter.load(bridge_skill_spec.motion_file)
         next_motion = self.motion_adapter.load(next_skill_spec.motion_file)
-        next_entry_idx = int(next_skill_spec.default_start_frame)
+        if target_frame_idx is None:
+            next_entry_idx = int(next_skill_spec.default_start_frame)
+        else:
+            next_entry_idx = int(target_frame_idx)
         target_entry = get_kinematic_frame(next_motion, next_entry_idx)
 
         post_spec = spec

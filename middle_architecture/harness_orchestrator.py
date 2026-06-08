@@ -64,6 +64,12 @@ class HarnessOrchestrator:
         for index, item in enumerate(skill_plan.sequence, start=1):
             skill_spec = self.skill_registry.get(item.skill)
             motion = self.motion_adapter.load(skill_spec.motion_file)
+            match = self.matcher.select(
+                robot_state=state,
+                skill_spec=skill_spec,
+                motion=motion,
+                duration=item.duration,
+            )
 
             if previous_skill is not None:
                 transition_count += 1
@@ -72,7 +78,7 @@ class HarnessOrchestrator:
 
                 if transition_spec.mode == "bridge":
                     body_seg = self.transition_builder.build_bridge_body(
-                        transition_spec, state, skill_spec
+                        transition_spec, state
                     )
                     body_seg.segment_id = f"{tag}_body"
                     body_result = self._execute_segment(body_seg, task_output_dir)
@@ -83,7 +89,7 @@ class HarnessOrchestrator:
                         return results
 
                     post_seg = self.transition_builder.build_bridge_post(
-                        transition_spec, state, skill_spec
+                        transition_spec, state, skill_spec, target_frame_idx=match.start_frame
                     )
                     if post_seg is not None:
                         post_seg.segment_id = f"{tag}_post"
@@ -95,7 +101,7 @@ class HarnessOrchestrator:
                             return results
                 else:
                     transition_segment = self.transition_builder.build_transition(
-                        transition_spec, state, skill_spec,
+                        transition_spec, state, skill_spec, target_frame_idx=match.start_frame,
                     )
                     transition_segment.segment_id = tag
                     result = self._execute_segment(transition_segment, task_output_dir)
@@ -105,12 +111,6 @@ class HarnessOrchestrator:
                         self._write_summary(skill_plan.task_id, results, task_output_dir)
                         return results
 
-            match = self.matcher.select(
-                robot_state=state,
-                skill_spec=skill_spec,
-                motion=motion,
-                duration=item.duration,
-            )
             skill_frames = slice_motion_to_reference_frames(
                 motion,
                 match.start_frame,

@@ -3,9 +3,9 @@
   "segment_type": "skill",
   "skill_name": "stand_up",
   "success": true,
-  "num_frames": 368,
+  "num_frames": 355,
   "source_motion_path": "assets/motions/walk_stand.pkl",
-  "start_frame": 1,
+  "start_frame": 9,
   "end_frame": 222,
   "target_duration": null,
   "transition_type": null,
@@ -13,20 +13,20 @@
   "to_skill": null,
   "failed_reason": null,
   "final_root_pos": [
-    3.290470600128174,
-    -4.868566036224365,
-    0.7857081890106201
+    1.8636789321899414,
+    -5.0780463218688965,
+    0.7853092551231384
   ],
   "metrics": {
-    "maje": 0.059317056089639664,
-    "root_height_error": 0.010950635187327862,
-    "root_pos_error": 0.12168608605861664,
-    "root_rot_error": 0.0859459787607193,
-    "velocity_error": 0.12428485602140427,
-    "accel_error": 1.4240715503692627,
-    "success_margin": 0.5523300051689148,
-    "phase_lag_frame": 2,
-    "num_steps": 368
+    "maje": 0.06171861290931702,
+    "root_height_error": 0.005750367883592844,
+    "root_pos_error": 0.4267571270465851,
+    "root_rot_error": 0.19731537997722626,
+    "velocity_error": 0.16332274675369263,
+    "accel_error": 1.4865354299545288,
+    "success_margin": 0.5509589791297913,
+    "phase_lag_frame": -2,
+    "num_steps": 355
   },
   "transition_metrics": null
 }

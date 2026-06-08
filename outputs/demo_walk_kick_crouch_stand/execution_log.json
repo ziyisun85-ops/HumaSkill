@@ -34,7 +34,7 @@
     "segment_type": "skill",
     "skill_name": "kick_leg",
     "success": true,
-    "num_frames": 317,
+    "num_frames": 310,
     "source_motion_path": "assets/motions/airkick_stand.pkl",
     "log_path": "outputs\\demo_walk_kick_crouch_stand\\skill_002_kick_leg\\result.json",
     "failed_reason": null
@@ -54,7 +54,7 @@
     "segment_type": "skill",
     "skill_name": "crouch_down",
     "success": true,
-    "num_frames": 228,
+    "num_frames": 203,
     "source_motion_path": "assets/motions/squat.pkl",
     "log_path": "outputs\\demo_walk_kick_crouch_stand\\skill_003_crouch_down\\result.json",
     "failed_reason": null
@@ -74,7 +74,7 @@
     "segment_type": "skill",
     "skill_name": "stand_up",
     "success": true,
-    "num_frames": 368,
+    "num_frames": 355,
     "source_motion_path": "assets/motions/walk_stand.pkl",
     "log_path": "outputs\\demo_walk_kick_crouch_stand\\skill_004_stand_up\\result.json",
     "failed_reason": null

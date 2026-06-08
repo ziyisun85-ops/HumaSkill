@@ -3,9 +3,9 @@
   "segment_type": "skill",
   "skill_name": "kick_leg",
   "success": true,
-  "num_frames": 317,
+  "num_frames": 310,
   "source_motion_path": "assets/motions/airkick_stand.pkl",
-  "start_frame": 10,
+  "start_frame": 14,
   "end_frame": 200,
   "target_duration": null,
   "transition_type": null,
@@ -13,20 +13,20 @@
   "to_skill": null,
   "failed_reason": null,
   "final_root_pos": [
-    1.861857295036316,
-    -1.6250907182693481,
-    0.7785272002220154
+    1.832000732421875,
+    -1.6105437278747559,
+    0.7782124876976013
   ],
   "metrics": {
-    "maje": 0.08835086226463318,
-    "root_height_error": 0.013174323365092278,
-    "root_pos_error": 0.08662388473749161,
-    "root_rot_error": 0.21286852657794952,
-    "velocity_error": 0.1726682186126709,
-    "accel_error": 2.1684679985046387,
-    "success_margin": 0.5057673335075379,
-    "phase_lag_frame": 12,
-    "num_steps": 317
+    "maje": 0.08918637037277222,
+    "root_height_error": 0.014793608337640762,
+    "root_pos_error": 0.09590005874633789,
+    "root_rot_error": 0.2573220431804657,
+    "velocity_error": 0.1744612455368042,
+    "accel_error": 2.1525180339813232,
+    "success_margin": 0.5045942544937134,
+    "phase_lag_frame": 15,
+    "num_steps": 310
   },
   "transition_metrics": null
 }

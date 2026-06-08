@@ -204,6 +204,50 @@ Fresh post-fix observations:
 | `transition_001_post` AUJ | 3.27 before post-frame retune | 1.878 |
 | Mean seam_vel_delta | 0.0227 | 0.0178 |
 
+### Transition Call Chain Cleanup (2026-06-08)
+
+Current action-switching code path is intentionally limited to one orchestrator path:
+
+1. `HarnessOrchestrator.execute()` reads the live `RobotState`.
+2. `MotionMatcher.select()` chooses the next skill clip start frame. With current config this is `pose_search`.
+3. If this is not the first skill, `TransitionRegistry.get(previous_skill, current_skill)` loads the configured transition spec.
+4. For `mode: bridge`, the orchestrator executes:
+   - `TransitionBuilder.build_bridge_body()` for pre-interp + reanchored bridge motion.
+   - `TransitionBuilder.build_bridge_post(..., target_frame_idx=match.start_frame)` for Hermite post-interp into the same frame that the next skill will use.
+5. For `mode: interpolation`, the orchestrator executes:
+   - `TransitionBuilder.build_transition(..., target_frame_idx=match.start_frame)`.
+6. The next skill reference is sliced from the same `match.start_frame`, then reanchored to the latest post-transition `RobotState`, and finally sent to `GMTTrackingRunner.track()`.
+
+Cleanup:
+
+- Removed unused `TransitionBuilder.build_bridge_transition()`. The actual runtime bridge path is split into body + post so the post segment can start from the real runner state.
+- Removed unused `_frame_from_reference_frames()`.
+- Removed unused `next_skill_spec` argument from `build_bridge_body()`.
+- Added `scripts/validate_transition_target_match_consistency.py` to prevent regression where transition targets default frame 0 but pose_search starts the next skill from a different frame.
+
+Fresh validation after cleanup:
+
+```text
+conda activate gmt; python scripts/validate_transition_alignment.py
+conda activate gmt; python scripts/validate_orchestrator_reanchor_timing.py
+conda activate gmt; python scripts/validate_transition_target_match_consistency.py
+conda activate gmt; python scripts/validate_hermite.py
+conda activate gmt; python scripts/validate_matcher.py
+conda activate gmt; python scripts/validate_metrics.py
+conda activate gmt; python scripts/run_harness_sequence.py --config configs/harness.yaml --sequence configs/sequences/demo_walk_kick_crouch_stand.yaml --skills configs/skills.yaml --transitions configs/transitions.yaml
+-> all exited 0; all 8 runtime segments reported success=True.
+```
+
+Matched-frame seam diagnostic after cleanup:
+
+| Seam | matched start | DOF mean jump | DOF max jump |
+|------|---------------|---------------|--------------|
+| `walk_forward -> kick_leg` | 14 | 0.0000 | 0.0000 |
+| `kick_leg -> crouch_down` | 60 | 0.0000 | 0.0000 |
+| `crouch_down -> stand_up` | 9 | 0.0000 | 0.0000 |
+
+Remaining reason the switch may still look imperfect: `GMTTrackingRunner.track()` creates a new segment-local `_ReferenceSampler` for every transition/skill. MuJoCo state, action history, and proprio history are continuous, but the policy's future reference window (`tar_obs_steps`) jumps to the new segment's future frames at each boundary. The current transition code now aligns the first frame and matched pose, but it does not blend the policy observation future window or action commands across segment boundaries.
+
 ---
 
 ## How to Run
