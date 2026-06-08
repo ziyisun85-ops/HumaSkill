@@ -13,27 +13,27 @@
   "to_skill": "stand_up",
   "failed_reason": null,
   "final_root_pos": [
-    1.9087762832641602,
-    -1.5592081546783447,
-    0.7797684669494629
+    1.8279662132263184,
+    -1.7829844951629639,
+    0.781565248966217
   ],
   "metrics": {
-    "maje": 0.05407913774251938,
-    "root_height_error": 0.007282231003046036,
-    "root_pos_error": 0.018779071047902107,
-    "root_rot_error": 0.050268009305000305,
-    "velocity_error": 0.0984131395816803,
-    "accel_error": 0.7604844570159912,
-    "success_margin": 0.5792628407478333,
-    "phase_lag_frame": 6,
+    "maje": 0.050660837441682816,
+    "root_height_error": 0.007742881774902344,
+    "root_pos_error": 0.025317924097180367,
+    "root_rot_error": 0.05586271733045578,
+    "velocity_error": 0.12473791092634201,
+    "accel_error": 0.8667643666267395,
+    "success_margin": 0.5815652489662171,
+    "phase_lag_frame": 11,
     "num_steps": 32
   },
   "transition_metrics": {
-    "seam_vel_delta": 0.0336175300180912,
-    "seam_accel_delta": 2.944262742996216,
-    "peak_jerk": 2.3273589611053467,
-    "mean_jerk": 2.3221797049045563,
-    "auj": 1.2412978694090115,
+    "seam_vel_delta": 0.03678353503346443,
+    "seam_accel_delta": 2.7853174209594727,
+    "peak_jerk": 2.9693024158477783,
+    "mean_jerk": 2.9617359042167664,
+    "auj": 1.583166220896564,
     "interpolation_mode": "hermite",
     "num_frames": 20
   }

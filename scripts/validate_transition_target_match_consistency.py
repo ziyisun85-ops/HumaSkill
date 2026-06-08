@@ -50,6 +50,7 @@ class _FakeRunner:
         self.state = _state_for_dof(np.zeros(23, dtype=np.float32))
         self.target_dof = target_dof
         self.transition_last_dof = None
+        self.transition_future_first_dof = None
         self.second_skill_first_dof = None
 
     def initialize(self):
@@ -58,12 +59,14 @@ class _FakeRunner:
     def get_robot_state(self):
         return self.state
 
-    def track(self, reference_frames):
+    def track(self, reference_frames, future_reference_frames=None):
         self.call_count += 1
         if self.call_count == 1:
             self.state = _state_for_dof(self.target_dof)
         elif self.call_count == 2:
             self.transition_last_dof = reference_frames.dof_pos[-1].copy()
+            if future_reference_frames is not None:
+                self.transition_future_first_dof = future_reference_frames.dof_pos[0].copy()
             self.state = _state_for_dof(self.target_dof)
         elif self.call_count == 3:
             self.second_skill_first_dof = reference_frames.dof_pos[0].copy()
@@ -146,7 +149,13 @@ plan = SimpleNamespace(
 orchestrator.execute(plan)
 
 print("Transition last DOF mean:", float(np.mean(runner.transition_last_dof)))
+print("Transition future first DOF mean:", float(np.mean(runner.transition_future_first_dof)))
 print("Second skill first DOF mean:", float(np.mean(runner.second_skill_first_dof)))
 np.testing.assert_allclose(runner.transition_last_dof, runner.second_skill_first_dof, atol=1e-6)
+np.testing.assert_allclose(
+    runner.transition_future_first_dof,
+    runner.second_skill_first_dof,
+    atol=1e-6,
+)
 
 print("\nAll assertions passed.")

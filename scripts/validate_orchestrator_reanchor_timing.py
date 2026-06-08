@@ -52,7 +52,7 @@ class _FakeRunner:
     def get_robot_state(self):
         return self.state
 
-    def track(self, reference_frames):
+    def track(self, reference_frames, future_reference_frames=None):
         self.call_count += 1
         self.recorded_first_roots.append(reference_frames.root_pos[0].copy())
         if self.call_count == 1:

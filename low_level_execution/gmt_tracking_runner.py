@@ -453,16 +453,25 @@ class GMTTrackingRunner:
         root_pos, root_rot, root_vel, _, dof_pos, _ = sampler.sample(t)
         return root_pos[0], root_rot[0], dof_pos[0], root_vel[0]
 
-    def track(self, reference_frames: ReferenceFrames) -> RunnerTrackResult:
+    def track(
+        self,
+        reference_frames: ReferenceFrames,
+        future_reference_frames: ReferenceFrames = None,
+    ) -> RunnerTrackResult:
         self._require_initialized()
         sampler = _ReferenceSampler(reference_frames)
+        future_sampler = (
+            _ReferenceSampler(future_reference_frames)
+            if future_reference_frames is not None
+            else None
+        )
         num_control_steps = max(1, int(math.ceil(sampler.length / self.control_dt)))
         _buffer = EvaluationBuffer()
 
         for control_step in range(num_control_steps):
             ref_rp, ref_rr, ref_dof, ref_vel = self._sample_reference_at_step(sampler, control_step)
 
-            obs = self._build_observation(sampler, control_step)
+            obs = self._build_observation(sampler, control_step, future_sampler=future_sampler)
             obs_tensor = torch.from_numpy(obs).float().unsqueeze(0).to(self.torch_device)
             with torch.no_grad():
                 raw_action = self.policy_jit(obs_tensor).detach().cpu().numpy().squeeze()
@@ -518,8 +527,17 @@ class GMTTrackingRunner:
         ang_vel = self.data.sensor("angular-velocity").data.astype(np.float32)
         return dof_pos.copy(), dof_vel.copy(), quat.copy(), ang_vel.copy()
 
-    def _build_observation(self, sampler: _ReferenceSampler, control_step: int) -> np.ndarray:
-        mimic_obs = self._get_mimic_obs(sampler, control_step)
+    def _build_observation(
+        self,
+        sampler: _ReferenceSampler,
+        control_step: int,
+        future_sampler: _ReferenceSampler = None,
+    ) -> np.ndarray:
+        mimic_obs = self._get_mimic_obs(
+            sampler,
+            control_step,
+            future_sampler=future_sampler,
+        )
         dof_pos, dof_vel, quat, ang_vel = self._extract_data()
         rpy = _quat_wxyz_to_euler(quat)
         obs_dof_vel = dof_vel.copy()
@@ -540,10 +558,52 @@ class GMTTrackingRunner:
         self.proprio_history_buf.append(obs_prop)
         return obs_buf
 
-    def _get_mimic_obs(self, sampler: _ReferenceSampler, control_step: int) -> np.ndarray:
+    def _sample_future_reference_window(
+        self,
+        sampler: _ReferenceSampler,
+        motion_times: np.ndarray,
+        future_sampler: _ReferenceSampler = None,
+    ):
+        root_pos, root_rot, root_vel, root_ang_vel, dof_pos, dof_vel = sampler.sample(motion_times)
+        if future_sampler is None:
+            return root_pos, root_rot, root_vel, root_ang_vel, dof_pos, dof_vel
+
+        future_mask = motion_times >= sampler.length
+        if not np.any(future_mask):
+            return root_pos, root_rot, root_vel, root_ang_vel, dof_pos, dof_vel
+
+        future_times = motion_times[future_mask] - sampler.length
+        (
+            future_root_pos,
+            future_root_rot,
+            future_root_vel,
+            future_root_ang_vel,
+            future_dof_pos,
+            future_dof_vel,
+        ) = future_sampler.sample(future_times)
+        root_pos[future_mask] = future_root_pos
+        root_rot[future_mask] = future_root_rot
+        root_vel[future_mask] = future_root_vel
+        root_ang_vel[future_mask] = future_root_ang_vel
+        dof_pos[future_mask] = future_dof_pos
+        dof_vel[future_mask] = future_dof_vel
+        return root_pos, root_rot, root_vel, root_ang_vel, dof_pos, dof_vel
+
+    def _get_mimic_obs(
+        self,
+        sampler: _ReferenceSampler,
+        control_step: int,
+        future_sampler: _ReferenceSampler = None,
+    ) -> np.ndarray:
         motion_time = control_step * self.control_dt
         obs_motion_times = self.tar_obs_steps.astype(np.float32) * self.control_dt + motion_time
-        root_pos, root_rot, root_vel, root_ang_vel, dof_pos, _ = sampler.sample(obs_motion_times)
+        root_pos, root_rot, root_vel, root_ang_vel, dof_pos, _ = (
+            self._sample_future_reference_window(
+                sampler,
+                obs_motion_times,
+                future_sampler=future_sampler,
+            )
+        )
         roll, pitch, _ = _quat_xyzw_to_euler_batch(root_rot)
         root_vel = _quat_rotate_inverse_xyzw(root_rot, root_vel)
         root_ang_vel = _quat_rotate_inverse_xyzw(root_rot, root_ang_vel)

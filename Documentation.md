@@ -10,7 +10,7 @@
 
 **Pipeline:** `walk_forward (10s) → [bridge] → kick_leg → [hermite] → crouch_down → [hermite] → stand_up`
 
-**Last full run:** 2026-06-08. All 8 segments succeeded with `pose_search` enabled and no fall detection trigger. Latest metrics below.
+**Last full run:** 2026-06-08. All 8 segments succeeded with `pose_search` enabled, transition-to-skill future-reference lookahead active, and no fall detection trigger. Latest metrics below.
 
 ### Baseline Metrics (Pre-Improvement)
 
@@ -23,16 +23,16 @@
 | skill_003 success margin | **0.284** | > 0.25 |
 | Min success margin (all) | 0.284 | > 0.25 |
 
-### Latest Metrics (Post-M4)
+### Latest Metrics (Post-M4 + Future Lookahead)
 
 | Metric | Value | Target |
 |--------|-------|--------|
-| Mean MAJE | 0.0622 | maintain |
-| Mean seam velocity delta | 0.0178 m/s | <= 0.10 |
-| transition_002 peak jerk | **3.086** | < 5.0 |
-| transition_002 AUJ | **1.020** | < 2.0 |
-| skill_003 success margin | **0.2838** | > 0.25 |
-| Min success margin (all) | 0.2838 | > 0.25 |
+| Mean MAJE | 0.0666 | maintain |
+| Mean seam velocity delta | 0.0274 m/s | <= 0.10 |
+| transition_002 peak jerk | **3.569** | < 5.0 |
+| transition_002 AUJ | **1.178** | < 2.0 |
+| skill_003 success margin | **0.2817** | > 0.25 |
+| Min success margin (all) | 0.2817 | > 0.25 |
 
 ### Improvement Milestone Status
 
@@ -246,7 +246,55 @@ Matched-frame seam diagnostic after cleanup:
 | `kick_leg -> crouch_down` | 60 | 0.0000 | 0.0000 |
 | `crouch_down -> stand_up` | 9 | 0.0000 | 0.0000 |
 
-Remaining reason the switch may still look imperfect: `GMTTrackingRunner.track()` creates a new segment-local `_ReferenceSampler` for every transition/skill. MuJoCo state, action history, and proprio history are continuous, but the policy's future reference window (`tar_obs_steps`) jumps to the new segment's future frames at each boundary. The current transition code now aligns the first frame and matched pose, but it does not blend the policy observation future window or action commands across segment boundaries.
+### Future Reference Window Lookahead (2026-06-08)
+
+Follow-up change for remaining visual non-smoothness at action boundaries:
+
+- `GMTTrackingRunner.track()` now accepts optional `future_reference_frames`.
+- `_get_mimic_obs()` samples future target times from the current segment until the current segment ends; target times beyond the segment duration are stitched into the supplied future segment instead of wrapping back to the current segment start.
+- `HarnessOrchestrator` passes the next skill's expected, reanchored reference frames as lookahead when executing interpolation transitions and bridge post transitions.
+- Normal skill calls and any runner call without `future_reference_frames` keep the old behavior.
+- No action smoothing was added. The first fix targets the policy input discontinuity directly instead of filtering policy outputs.
+
+New validation:
+
+```text
+conda activate gmt; python scripts/validate_future_reference_window.py
+-> exit 0; future window crosses segment boundary without wrapping.
+
+conda activate gmt; python scripts/validate_transition_target_match_consistency.py
+-> exit 0; transition endpoint, transition lookahead first frame, and following skill first frame match.
+```
+
+Full validation after lookahead:
+
+```text
+conda activate gmt; python -m py_compile low_level_execution/gmt_tracking_runner.py middle_architecture/harness_orchestrator.py scripts/validate_future_reference_window.py scripts/validate_transition_target_match_consistency.py scripts/validate_orchestrator_reanchor_timing.py
+conda activate gmt; python scripts/validate_future_reference_window.py
+conda activate gmt; python scripts/validate_transition_alignment.py
+conda activate gmt; python scripts/validate_orchestrator_reanchor_timing.py
+conda activate gmt; python scripts/validate_transition_target_match_consistency.py
+conda activate gmt; python scripts/validate_hermite.py
+conda activate gmt; python scripts/validate_matcher.py
+conda activate gmt; python scripts/validate_metrics.py
+conda activate gmt; python scripts/run_harness_sequence.py --config configs/harness.yaml --sequence configs/sequences/demo_walk_kick_crouch_stand.yaml --skills configs/skills.yaml --transitions configs/transitions.yaml
+-> all exited 0; all 8 runtime segments reported success=True.
+```
+
+Fresh lookahead metrics from `outputs/demo_walk_kick_crouch_stand/summary_metrics.json`:
+
+| Metric | Value |
+|--------|-------|
+| Mean MAJE | 0.0666 |
+| Mean root position error | 0.1713 |
+| Mean root rotation error | 0.1549 |
+| Mean seam velocity delta | 0.0274 |
+| Max seam velocity delta | 0.0368 |
+| Mean AUJ | 1.2954 |
+| Max AUJ | 1.5832 |
+| Min success margin | 0.2817 |
+
+Remaining boundary limitation: bridge body still cannot receive bridge-post lookahead because bridge post is intentionally built only after the bridge body runs and the real robot state is known. The transition/post-to-skill boundary now has future-reference continuity; the body-to-post boundary remains governed by real-state Hermite post interpolation.
 
 ---
 
@@ -302,6 +350,7 @@ python scripts/run_single_gmt_motion.py --motion walk_stand.pkl --duration 5.0
 | P2 | Resolved in M2: bridge post starts from real runner state and preserves velocity continuity with Hermite post interpolation | Medium | M2 |
 | P3 | Resolved for M3 acceptance: `pose_search` enabled globally and score ordering validated; crouch margin stayed above target but did not improve | Low-Med | M3 |
 | P4 | Resolved: bridge body and next-skill clips now reanchor with post-transition root position/yaw, eliminating observed action seam yaw/XY mismatch | High | Orientation fix |
+| P5 | Resolved for transition/post-to-skill seams: runner future-reference window now stitches into the next skill instead of wrapping to the current segment start; action smoothing was not added | Medium | Future lookahead |
 
 ---
 

@@ -13,27 +13,27 @@
   "to_skill": "crouch_down",
   "failed_reason": null,
   "final_root_pos": [
-    1.8270149230957031,
-    -1.621932864189148,
-    0.7800074815750122
+    1.7630587816238403,
+    -1.881594181060791,
+    0.7799802422523499
   ],
   "metrics": {
-    "maje": 0.05944424122571945,
-    "root_height_error": 0.007819319143891335,
-    "root_pos_error": 0.009597958996891975,
-    "root_rot_error": 0.033291351050138474,
-    "velocity_error": 0.055823277682065964,
-    "accel_error": 0.7172426581382751,
-    "success_margin": 0.5776385545730591,
+    "maje": 0.058696258813142776,
+    "root_height_error": 0.007787644863128662,
+    "root_pos_error": 0.009138545952737331,
+    "root_rot_error": 0.029400521889328957,
+    "velocity_error": 0.05473729223012924,
+    "accel_error": 0.619571328163147,
+    "success_margin": 0.5774574160575867,
     "phase_lag_frame": -15,
     "num_steps": 20
   },
   "transition_metrics": {
-    "seam_vel_delta": 0.016370177268981934,
-    "seam_accel_delta": 0.4799613654613495,
-    "peak_jerk": 3.518700361251831,
-    "mean_jerk": 3.4975501894950867,
-    "auj": 1.1658502855333237,
+    "seam_vel_delta": 0.015967579558491707,
+    "seam_accel_delta": 0.4904903173446655,
+    "peak_jerk": 3.5688939094543457,
+    "mean_jerk": 3.5330700516700744,
+    "auj": 1.1776902418499455,
     "interpolation_mode": "hermite",
     "num_frames": 24
   }

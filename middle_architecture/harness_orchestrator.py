@@ -9,7 +9,7 @@ import numpy as np
 from middle_architecture.evaluation import SegmentMetrics
 from middle_architecture.matcher import MotionMatcher
 from middle_architecture.reference_ops import reanchor_reference_frames, slice_motion_to_reference_frames
-from middle_architecture.robot_state import MatchConfig, ReferenceSegment, TransitionMetrics
+from middle_architecture.robot_state import MatchConfig, ReferenceFrames, ReferenceSegment, RobotState, TransitionMetrics
 from middle_architecture.transition_builder import TransitionBuilder
 
 
@@ -93,7 +93,16 @@ class HarnessOrchestrator:
                     )
                     if post_seg is not None:
                         post_seg.segment_id = f"{tag}_post"
-                        post_result = self._execute_segment(post_seg, task_output_dir)
+                        future_frames = self._prepare_skill_frames(
+                            motion,
+                            match,
+                            self._reference_tail_state(post_seg.reference_frames),
+                        )
+                        post_result = self._execute_segment(
+                            post_seg,
+                            task_output_dir,
+                            future_reference_frames=future_frames,
+                        )
                         results.append(post_result)
                         state = post_result.final_state
                         if not post_result.success and self.stop_on_failure:
@@ -104,31 +113,23 @@ class HarnessOrchestrator:
                         transition_spec, state, skill_spec, target_frame_idx=match.start_frame,
                     )
                     transition_segment.segment_id = tag
-                    result = self._execute_segment(transition_segment, task_output_dir)
+                    future_frames = self._prepare_skill_frames(
+                        motion,
+                        match,
+                        self._reference_tail_state(transition_segment.reference_frames),
+                    )
+                    result = self._execute_segment(
+                        transition_segment,
+                        task_output_dir,
+                        future_reference_frames=future_frames,
+                    )
                     results.append(result)
                     state = result.final_state
                     if not result.success and self.stop_on_failure:
                         self._write_summary(skill_plan.task_id, results, task_output_dir)
                         return results
 
-            skill_frames = slice_motion_to_reference_frames(
-                motion,
-                match.start_frame,
-                match.end_frame,
-            )
-            if self.reference_contract.get("reanchor_skill_clip") is True:
-                skill_frames = reanchor_reference_frames(
-                    skill_frames,
-                    state,
-                    {
-                        "root_reference_mode": self.reference_contract.get(
-                            "root_reference_mode", "root_relative"
-                        ),
-                        "reanchor_yaw_only": self.reference_contract.get(
-                            "reanchor_yaw_only", True
-                        ),
-                    },
-                )
+            skill_frames = self._prepare_skill_frames(motion, match, state)
 
             skill_segment = ReferenceSegment(
                 segment_id=f"skill_{index:03d}_{item.skill}",
@@ -152,10 +153,50 @@ class HarnessOrchestrator:
         self._write_summary(skill_plan.task_id, results, task_output_dir)
         return results
 
-    def _execute_segment(self, segment: ReferenceSegment, task_output_dir: Path) -> ExecutionResult:
+    def _prepare_skill_frames(self, motion, match, anchor_state) -> ReferenceFrames:
+        skill_frames = slice_motion_to_reference_frames(
+            motion,
+            match.start_frame,
+            match.end_frame,
+        )
+        if self.reference_contract.get("reanchor_skill_clip") is True:
+            skill_frames = reanchor_reference_frames(
+                skill_frames,
+                anchor_state,
+                {
+                    "root_reference_mode": self.reference_contract.get(
+                        "root_reference_mode", "root_relative"
+                    ),
+                    "reanchor_yaw_only": self.reference_contract.get(
+                        "reanchor_yaw_only", True
+                    ),
+                },
+            )
+        return skill_frames
+
+    def _reference_tail_state(self, reference_frames: ReferenceFrames) -> RobotState:
+        root_rot = reference_frames.root_rot[-1]
+        return RobotState(
+            root_pos=reference_frames.root_pos[-1].copy(),
+            root_quat=np.array([root_rot[3], root_rot[0], root_rot[1], root_rot[2]], dtype=np.float32),
+            dof_pos=reference_frames.dof_pos[-1].copy(),
+            root_lin_vel=np.zeros(3, dtype=np.float32),
+            root_ang_vel=np.zeros(3, dtype=np.float32),
+            dof_vel=np.zeros(reference_frames.dof_pos.shape[1], dtype=np.float32),
+        )
+
+    def _execute_segment(
+        self,
+        segment: ReferenceSegment,
+        task_output_dir: Path,
+        future_reference_frames: Optional[ReferenceFrames] = None,
+    ) -> ExecutionResult:
         segment_dir = task_output_dir / segment.segment_id
         segment_dir.mkdir(parents=True, exist_ok=True)
-        track_result = self.runner.track(segment.reference_frames)
+        track_result = self.runner.track(
+            segment.reference_frames,
+            future_reference_frames=future_reference_frames,
+        )
         final_state = self.runner.get_robot_state()
         self._write_robot_state(final_state, segment_dir / "robot_state_final.npz")
 
