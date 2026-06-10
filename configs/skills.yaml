@@ -40,3 +40,10 @@ skills:
     default_end_frame: null
     fps: 30.0
     description: bridge reference used around crouch-walk or crouch-related transitions.
+
+  dad_dance_reference:
+    motion_file: assets/motions/g1_23dof/B_DadDance_reference_qpos30.npy
+    default_start_frame: 0
+    default_end_frame: 250
+    fps: 60.0
+    description: g1-moves B_DadDance NPZ reference exported to HumaSkill 23DoF qpos. First 250 frames are used for initial integration testing.
