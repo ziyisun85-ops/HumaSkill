@@ -13,28 +13,79 @@
   "to_skill": "crouch_down",
   "failed_reason": null,
   "final_root_pos": [
-    1.7630587816238403,
-    -1.881594181060791,
-    0.7799802422523499
+    0.5469855070114136,
+    -2.409426212310791,
+    0.7799732685089111
   ],
   "metrics": {
-    "maje": 0.058696258813142776,
-    "root_height_error": 0.007787644863128662,
-    "root_pos_error": 0.009138545952737331,
-    "root_rot_error": 0.029400521889328957,
-    "velocity_error": 0.05473729223012924,
-    "accel_error": 0.619571328163147,
-    "success_margin": 0.5774574160575867,
+    "maje": 0.06070671230554581,
+    "root_height_error": 0.00739552965387702,
+    "root_pos_error": 0.00905626080930233,
+    "root_rot_error": 0.029282474890351295,
+    "velocity_error": 0.055603135377168655,
+    "accel_error": 0.5580673217773438,
+    "success_margin": 0.5773918509483338,
     "phase_lag_frame": -15,
-    "num_steps": 20
+    "num_steps": 20,
+    "max_abs_roll": 0.008584233932197094,
+    "max_abs_pitch": 0.14714746177196503,
+    "mean_qvel_norm": 1.7188421487808228,
+    "max_qvel_norm": 3.206118106842041,
+    "mean_root_velocity_norm": 0.04303460568189621,
+    "max_root_velocity_norm": 0.07157813012599945,
+    "foot_contact_switch_count": 0,
+    "foot_contact_consistency": 1.0,
+    "foot_sliding": 0.015612346353009343
+  },
+  "diagnostics": {
+    "first_second_stability": {
+      "num_steps": 20,
+      "min_base_height": 0.7773918509483337,
+      "mean_base_height": 0.7790207266807556,
+      "max_base_height": 0.7799732685089111,
+      "max_abs_roll": 0.008584233932197094,
+      "max_abs_pitch": 0.14714746177196503,
+      "max_qvel_norm": 3.206118106842041,
+      "mean_qvel_norm": 1.7188421487808228,
+      "max_root_velocity_norm": 0.07157813012599945,
+      "mean_root_velocity_norm": 0.04303460568189621,
+      "left_foot_contact_ratio": 1.0,
+      "right_foot_contact_ratio": 1.0,
+      "both_feet_contact_ratio": 1.0,
+      "no_foot_contact_ratio": 0.0
+    }
   },
   "transition_metrics": {
-    "seam_vel_delta": 0.015967579558491707,
-    "seam_accel_delta": 0.4904903173446655,
-    "peak_jerk": 3.5688939094543457,
-    "mean_jerk": 3.5330700516700744,
-    "auj": 1.1776902418499455,
+    "seam_vel_delta": 0.016959112137556076,
+    "seam_accel_delta": 0.5253541469573975,
+    "peak_jerk": 3.902813196182251,
+    "mean_jerk": 3.867413640022278,
+    "auj": 1.2891381258910102,
     "interpolation_mode": "hermite",
-    "num_frames": 24
+    "num_frames": 24,
+    "root_position_jump": 0.0,
+    "root_yaw_jump_deg": 7.6247056475496235e-06,
+    "root_height_jump": 0.0,
+    "base_velocity_jump": 0.016959112137556076,
+    "dof_position_jump_mean": 0.0,
+    "dof_position_jump_max": 0.0,
+    "phase_compatibility_score": 0.9957690646225881
+  },
+  "transition_plan": {
+    "decision": "keep_config_interpolation",
+    "reason": "configured_interpolation_passed_through",
+    "diagnostics": {}
+  },
+  "motion_source": {
+    "type": "skillmotion",
+    "library_entry": null,
+    "source_type": "generated_reference",
+    "source_asset": null,
+    "role": null
+  },
+  "recovery": {
+    "enabled": true,
+    "events": [],
+    "recommendations": []
   }
 }

@@ -350,6 +350,28 @@ def compute_transition_metrics(
     else:
         seam_vel_delta = 0.0
         seam_accel_delta = 0.0
+        next_vel = np.zeros_like(next_skill_frames.root_pos)
+
+    root_position_jump = float(
+        np.linalg.norm(transition_frames.root_pos[-1, :2] - next_skill_frames.root_pos[0, :2])
+    )
+    root_height_jump = float(abs(transition_frames.root_pos[-1, 2] - next_skill_frames.root_pos[0, 2]))
+    yaw0 = _yaw_from_xyzw(transition_frames.root_rot[-1])
+    yaw1 = _yaw_from_xyzw(next_skill_frames.root_rot[0])
+    yaw_jump = (yaw1 - yaw0 + np.pi) % (2.0 * np.pi) - np.pi
+    root_yaw_jump_deg = float(abs(np.degrees(yaw_jump)))
+    base_velocity_jump = seam_vel_delta
+    dof_jump = np.abs(transition_frames.dof_pos[-1] - next_skill_frames.dof_pos[0])
+    dof_position_jump_mean = float(np.mean(dof_jump))
+    dof_position_jump_max = float(np.max(dof_jump))
+    phase_penalty = (
+        5.0 * root_position_jump
+        + root_height_jump
+        + abs(float(yaw_jump))
+        + dof_position_jump_mean
+        + 0.25 * base_velocity_jump
+    )
+    phase_compatibility_score = float(np.exp(-phase_penalty))
 
     return TransitionMetrics(
         seam_vel_delta=seam_vel_delta,
@@ -359,6 +381,13 @@ def compute_transition_metrics(
         auj=auj,
         interpolation_mode=interpolation_mode,
         num_frames=N,
+        root_position_jump=root_position_jump,
+        root_yaw_jump_deg=root_yaw_jump_deg,
+        root_height_jump=root_height_jump,
+        base_velocity_jump=base_velocity_jump,
+        dof_position_jump_mean=dof_position_jump_mean,
+        dof_position_jump_max=dof_position_jump_max,
+        phase_compatibility_score=phase_compatibility_score,
     )
 
 

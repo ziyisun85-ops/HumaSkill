@@ -14,6 +14,7 @@ class SkillSpec:
     default_end_frame: Optional[int] = None
     fps: float = 30.0
     description: str = ""
+    matching_mode: Optional[str] = None
 
 
 class SkillRegistry:
@@ -38,6 +39,7 @@ class SkillRegistry:
                 default_end_frame=raw.get("default_end_frame"),
                 fps=float(raw.get("fps", 30.0)),
                 description=str(raw.get("description", "")),
+                matching_mode=raw.get("matching_mode"),
             )
             if skills[name].default_end_frame is not None:
                 skills[name].default_end_frame = int(skills[name].default_end_frame)

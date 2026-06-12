@@ -13,20 +13,100 @@
   "to_skill": "kick_leg",
   "failed_reason": null,
   "final_root_pos": [
-    1.6451903581619263,
-    -1.7475026845932007,
-    0.7859707474708557
+    0.5682176351547241,
+    -2.5091185569763184,
+    0.7852834463119507
   ],
   "metrics": {
-    "maje": 0.06255869567394257,
-    "root_height_error": 0.005975513719022274,
-    "root_pos_error": 0.26880979537963867,
-    "root_rot_error": 0.12750160694122314,
-    "velocity_error": 0.1445821225643158,
-    "accel_error": 1.6330126523971558,
-    "success_margin": 0.5493157982826233,
+    "maje": 0.06081758439540863,
+    "root_height_error": 0.006735897623002529,
+    "root_pos_error": 0.26485908031463623,
+    "root_rot_error": 0.09402871131896973,
+    "velocity_error": 0.13966545462608337,
+    "accel_error": 1.4903430938720703,
+    "success_margin": 0.5494598627090455,
     "phase_lag_frame": 1,
-    "num_steps": 403
+    "num_steps": 403,
+    "max_abs_roll": 0.07017147541046143,
+    "max_abs_pitch": 0.12770172953605652,
+    "mean_qvel_norm": 3.159580707550049,
+    "max_qvel_norm": 6.928825378417969,
+    "mean_root_velocity_norm": 0.4874643087387085,
+    "max_root_velocity_norm": 1.034125566482544,
+    "foot_contact_switch_count": 25,
+    "foot_contact_consistency": 0.9689054726368159,
+    "foot_sliding": 0.5155911636488781
   },
-  "transition_metrics": null
+  "diagnostics": {
+    "first_second_stability": {
+      "num_steps": 50,
+      "min_base_height": 0.7685359716415405,
+      "mean_base_height": 0.7770107984542847,
+      "max_base_height": 0.7804747819900513,
+      "max_abs_roll": 0.05550187826156616,
+      "max_abs_pitch": 0.0846053957939148,
+      "max_qvel_norm": 4.730700969696045,
+      "mean_qvel_norm": 1.8347102403640747,
+      "max_root_velocity_norm": 0.4550475478172302,
+      "mean_root_velocity_norm": 0.17216520011425018,
+      "left_foot_contact_ratio": 0.94,
+      "right_foot_contact_ratio": 0.6,
+      "both_feet_contact_ratio": 0.54,
+      "no_foot_contact_ratio": 0.0
+    }
+  },
+  "transition_metrics": null,
+  "transition_plan": {
+    "decision": "keep_bridge_not_stand_ready",
+    "reason": "failed_criteria:root_lin_vel_norm,dof_vel_norm",
+    "diagnostics": {
+      "stand_ready_skill": "stable_stand_bridge",
+      "stand_ready_frame": 0,
+      "target_entry_frame": 0,
+      "criteria": {
+        "dof_pos_mean_diff": {
+          "value": 0.14748458564281464,
+          "threshold": 0.15,
+          "passed": true
+        },
+        "root_height_diff": {
+          "value": 0.012682795524597168,
+          "threshold": 0.08,
+          "passed": true
+        },
+        "roll_pitch": {
+          "value": 0.059268225446377415,
+          "threshold": 0.15,
+          "passed": true
+        },
+        "root_lin_vel_norm": {
+          "value": 0.5517762899398804,
+          "threshold": 0.25,
+          "passed": false
+        },
+        "dof_vel_norm": {
+          "value": 8.416431427001953,
+          "threshold": 2.5,
+          "passed": false
+        },
+        "target_entry_dof_diff": {
+          "value": 0.3158673346042633,
+          "threshold": 0.4,
+          "passed": true
+        }
+      }
+    }
+  },
+  "motion_source": {
+    "type": "skillmotion",
+    "library_entry": null,
+    "source_type": "generated_reference",
+    "source_asset": null,
+    "role": null
+  },
+  "recovery": {
+    "enabled": true,
+    "events": [],
+    "recommendations": []
+  }
 }

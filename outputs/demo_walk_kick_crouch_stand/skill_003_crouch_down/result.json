@@ -13,20 +13,82 @@
   "to_skill": null,
   "failed_reason": null,
   "final_root_pos": [
-    1.7893890142440796,
-    -1.845591425895691,
-    0.7840126156806946
+    0.5798549056053162,
+    -2.3892362117767334,
+    0.7839906811714172
   ],
   "metrics": {
-    "maje": 0.09559034556150436,
-    "root_height_error": 0.005618060007691383,
-    "root_pos_error": 0.043434444814920425,
-    "root_rot_error": 0.1297546774148941,
-    "velocity_error": 0.10264966636896133,
-    "accel_error": 1.0959892272949219,
-    "success_margin": 0.28165464401245116,
+    "maje": 0.09587815403938293,
+    "root_height_error": 0.005687752738595009,
+    "root_pos_error": 0.04101908579468727,
+    "root_rot_error": 0.12870945036411285,
+    "velocity_error": 0.103193499147892,
+    "accel_error": 1.097477674484253,
+    "success_margin": 0.28127901554107665,
     "phase_lag_frame": 0,
-    "num_steps": 203
+    "num_steps": 203,
+    "max_abs_roll": 0.08482015132904053,
+    "max_abs_pitch": 0.14740660786628723,
+    "mean_qvel_norm": 2.9607126712799072,
+    "max_qvel_norm": 8.366084098815918,
+    "mean_root_velocity_norm": 0.2270914912223816,
+    "max_root_velocity_norm": 0.9141319990158081,
+    "foot_contact_switch_count": 2,
+    "foot_contact_consistency": 0.995049504950495,
+    "foot_sliding": 0.2630155692804692
   },
-  "transition_metrics": null
+  "diagnostics": {
+    "first_second_stability": {
+      "num_steps": 50,
+      "min_base_height": 0.7800313234329224,
+      "mean_base_height": 0.7808612585067749,
+      "max_base_height": 0.7829134464263916,
+      "max_abs_roll": 0.019037481397390366,
+      "max_abs_pitch": 0.05881214886903763,
+      "max_qvel_norm": 2.6645870208740234,
+      "mean_qvel_norm": 1.8728833198547363,
+      "max_root_velocity_norm": 0.06560183316469193,
+      "mean_root_velocity_norm": 0.039394810795784,
+      "left_foot_contact_ratio": 1.0,
+      "right_foot_contact_ratio": 1.0,
+      "both_feet_contact_ratio": 1.0,
+      "no_foot_contact_ratio": 0.0
+    }
+  },
+  "transition_metrics": null,
+  "transition_plan": null,
+  "motion_source": {
+    "type": "skillmotion",
+    "library_entry": "crouch_down",
+    "source_type": "qpos_clip",
+    "source_asset": "assets/motions/squat.pkl",
+    "role": {
+      "skill_type": "locomotion",
+      "recovery_tag": "normal",
+      "target_safe_state": null
+    }
+  },
+  "recovery": {
+    "enabled": true,
+    "events": [
+      {
+        "event_type": "low_success_margin",
+        "severity": "warning",
+        "segment_id": "skill_003_crouch_down",
+        "message": "segment success margin is below warning threshold",
+        "metric": "success_margin",
+        "value": 0.28127901554107665,
+        "threshold": 0.3
+      }
+    ],
+    "recommendations": [
+      {
+        "event_type": "low_success_margin",
+        "action": "monitor_only",
+        "execute": false,
+        "skill": null,
+        "reason": "warning event logged; no recovery action executed in phase 1"
+      }
+    ]
+  }
 }

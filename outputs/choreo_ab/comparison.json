@@ -1,0 +1,551 @@
+{
+  "registry_output": "G:\\Code\\Python\\HumaSkill\\outputs\\choreo_ab\\registry\\demo_walk_kick_crouch_stand",
+  "skillmotion_output": "G:\\Code\\Python\\HumaSkill\\outputs\\choreo_ab\\skillmotion\\demo_walk_kick_crouch_stand",
+  "aggregate": {
+    "registry_success": true,
+    "skillmotion_success": true,
+    "all_rows_pass": true
+  },
+  "rows": [
+    {
+      "segment_id": "stabilization_000_stand_ready",
+      "success": {
+        "registry": true,
+        "skillmotion": true,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 0.0
+      },
+      "success_margin": {
+        "registry": 0.5693877816200257,
+        "skillmotion": 0.5693877816200257,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "maje": {
+        "registry": 0.051232293248176575,
+        "skillmotion": 0.051232293248176575,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "seam_vel_delta": {
+        "registry": null,
+        "skillmotion": null,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "peak_jerk": {
+        "registry": null,
+        "skillmotion": null,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "auj": {
+        "registry": null,
+        "skillmotion": null,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "start_frame": {
+        "registry": 0,
+        "skillmotion": 0,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 0.0
+      },
+      "transition_decision": {
+        "registry": null,
+        "skillmotion": null,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 0.0
+      },
+      "pass": true
+    },
+    {
+      "segment_id": "skill_001_walk_forward",
+      "success": {
+        "registry": true,
+        "skillmotion": true,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 0.0
+      },
+      "success_margin": {
+        "registry": 0.5550278306007386,
+        "skillmotion": 0.5550278306007386,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "maje": {
+        "registry": 0.06667342036962509,
+        "skillmotion": 0.06667342036962509,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "seam_vel_delta": {
+        "registry": null,
+        "skillmotion": null,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "peak_jerk": {
+        "registry": null,
+        "skillmotion": null,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "auj": {
+        "registry": null,
+        "skillmotion": null,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "start_frame": {
+        "registry": 60,
+        "skillmotion": 60,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 0.0
+      },
+      "transition_decision": {
+        "registry": null,
+        "skillmotion": null,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 0.0
+      },
+      "pass": true
+    },
+    {
+      "segment_id": "transition_001_walk_forward_to_kick_leg_body",
+      "success": {
+        "registry": true,
+        "skillmotion": true,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 0.0
+      },
+      "success_margin": {
+        "registry": 0.5494598627090455,
+        "skillmotion": 0.5494598627090455,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "maje": {
+        "registry": 0.06081758439540863,
+        "skillmotion": 0.06081758439540863,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "seam_vel_delta": {
+        "registry": null,
+        "skillmotion": null,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "peak_jerk": {
+        "registry": null,
+        "skillmotion": null,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "auj": {
+        "registry": null,
+        "skillmotion": null,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "start_frame": {
+        "registry": 0,
+        "skillmotion": 0,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 0.0
+      },
+      "transition_decision": {
+        "registry": "keep_bridge_not_stand_ready",
+        "skillmotion": "keep_bridge_not_stand_ready",
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 0.0
+      },
+      "pass": true
+    },
+    {
+      "segment_id": "transition_001_walk_forward_to_kick_leg_post",
+      "success": {
+        "registry": true,
+        "skillmotion": true,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 0.0
+      },
+      "success_margin": {
+        "registry": 0.548830795288086,
+        "skillmotion": 0.548830795288086,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "maje": {
+        "registry": 0.05242924764752388,
+        "skillmotion": 0.05242924764752388,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "seam_vel_delta": {
+        "registry": 0.012741085141897202,
+        "skillmotion": 0.012741085141897202,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "peak_jerk": {
+        "registry": 2.764289379119873,
+        "skillmotion": 2.764289379119873,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "auj": {
+        "registry": 1.8448813645368607,
+        "skillmotion": 1.8448813645368607,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "start_frame": {
+        "registry": null,
+        "skillmotion": null,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 0.0
+      },
+      "transition_decision": {
+        "registry": "keep_bridge_not_stand_ready",
+        "skillmotion": "keep_bridge_not_stand_ready",
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 0.0
+      },
+      "pass": true
+    },
+    {
+      "segment_id": "skill_002_kick_leg",
+      "success": {
+        "registry": true,
+        "skillmotion": true,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 0.0
+      },
+      "success_margin": {
+        "registry": 0.5039663791656495,
+        "skillmotion": 0.5039663791656495,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "maje": {
+        "registry": 0.08698096871376038,
+        "skillmotion": 0.08698096871376038,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "seam_vel_delta": {
+        "registry": null,
+        "skillmotion": null,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "peak_jerk": {
+        "registry": null,
+        "skillmotion": null,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "auj": {
+        "registry": null,
+        "skillmotion": null,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "start_frame": {
+        "registry": 0,
+        "skillmotion": 0,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 0.0
+      },
+      "transition_decision": {
+        "registry": null,
+        "skillmotion": null,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 0.0
+      },
+      "pass": true
+    },
+    {
+      "segment_id": "transition_002_kick_leg_to_crouch_down",
+      "success": {
+        "registry": true,
+        "skillmotion": true,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 0.0
+      },
+      "success_margin": {
+        "registry": 0.5773918509483338,
+        "skillmotion": 0.5773918509483338,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "maje": {
+        "registry": 0.06070671230554581,
+        "skillmotion": 0.06070671230554581,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "seam_vel_delta": {
+        "registry": 0.016959112137556076,
+        "skillmotion": 0.016959112137556076,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "peak_jerk": {
+        "registry": 3.902813196182251,
+        "skillmotion": 3.902813196182251,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "auj": {
+        "registry": 1.2891381258910102,
+        "skillmotion": 1.2891381258910102,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "start_frame": {
+        "registry": null,
+        "skillmotion": null,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 0.0
+      },
+      "transition_decision": {
+        "registry": "keep_config_interpolation",
+        "skillmotion": "keep_config_interpolation",
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 0.0
+      },
+      "pass": true
+    },
+    {
+      "segment_id": "skill_003_crouch_down",
+      "success": {
+        "registry": true,
+        "skillmotion": true,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 0.0
+      },
+      "success_margin": {
+        "registry": 0.28127901554107665,
+        "skillmotion": 0.28127901554107665,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "maje": {
+        "registry": 0.09587815403938293,
+        "skillmotion": 0.09587815403938293,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "seam_vel_delta": {
+        "registry": null,
+        "skillmotion": null,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "peak_jerk": {
+        "registry": null,
+        "skillmotion": null,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "auj": {
+        "registry": null,
+        "skillmotion": null,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "start_frame": {
+        "registry": 60,
+        "skillmotion": 60,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 0.0
+      },
+      "transition_decision": {
+        "registry": null,
+        "skillmotion": null,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 0.0
+      },
+      "pass": true
+    },
+    {
+      "segment_id": "transition_003_crouch_down_to_stand_up",
+      "success": {
+        "registry": true,
+        "skillmotion": true,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 0.0
+      },
+      "success_margin": {
+        "registry": 0.5813417911529541,
+        "skillmotion": 0.5813417911529541,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "maje": {
+        "registry": 0.05028869956731796,
+        "skillmotion": 0.05028869956731796,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "seam_vel_delta": {
+        "registry": 0.03556094691157341,
+        "skillmotion": 0.03556094691157341,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "peak_jerk": {
+        "registry": 2.6930322647094727,
+        "skillmotion": 2.6930322647094727,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "auj": {
+        "registry": 1.4382661037135807,
+        "skillmotion": 1.4382661037135807,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "start_frame": {
+        "registry": null,
+        "skillmotion": null,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 0.0
+      },
+      "transition_decision": {
+        "registry": "keep_config_interpolation",
+        "skillmotion": "keep_config_interpolation",
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 0.0
+      },
+      "pass": true
+    },
+    {
+      "segment_id": "skill_004_stand_up",
+      "success": {
+        "registry": true,
+        "skillmotion": true,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 0.0
+      },
+      "success_margin": {
+        "registry": 0.5514163851737977,
+        "skillmotion": 0.5514163851737977,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "maje": {
+        "registry": 0.060837339609861374,
+        "skillmotion": 0.060837339609861374,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "seam_vel_delta": {
+        "registry": null,
+        "skillmotion": null,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "peak_jerk": {
+        "registry": null,
+        "skillmotion": null,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "auj": {
+        "registry": null,
+        "skillmotion": null,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 1e-06
+      },
+      "start_frame": {
+        "registry": 9,
+        "skillmotion": 9,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 0.0
+      },
+      "transition_decision": {
+        "registry": null,
+        "skillmotion": null,
+        "pass": true,
+        "diff": 0.0,
+        "tolerance": 0.0
+      },
+      "pass": true
+    }
+  ]
+}

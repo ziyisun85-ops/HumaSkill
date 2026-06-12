@@ -10,6 +10,7 @@ skills:
     motion_file: assets/motions/airkick_stand.pkl
     default_start_frame: 0
     default_end_frame: null
+    matching_mode: static
     fps: 30.0
     description: standing air kick reference. airkick_stand.pkl and kick_walk.pkl both passed 2s smoke; airkick_stand is the default because the sequence bridges from walking to stable standing before kicking.
 

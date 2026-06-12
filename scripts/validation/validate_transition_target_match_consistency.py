@@ -1,4 +1,4 @@
-"""Validate transition target frame matches the following skill start frame.
+﻿"""Validate transition target frame matches the following skill start frame.
 
 The orchestrator must not build a transition to a skill's default frame and then
 start the skill from a different pose_search frame. That creates a visible
@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 from types import SimpleNamespace
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import numpy as np
 
@@ -159,3 +159,4 @@ np.testing.assert_allclose(
 )
 
 print("\nAll assertions passed.")
+

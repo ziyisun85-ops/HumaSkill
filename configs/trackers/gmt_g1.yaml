@@ -1,0 +1,79 @@
+name: gmt_g1
+tracker_type: general_motion_tracking
+robot: g1
+dof: 23
+control_frequency_hz: 50.0
+reference_type: kinematic_reference_frames
+observation_type: proprio_history20_mimic_future20
+action_type: joint_position_target
+action_dimension: 23
+action_scale: 0.5
+joint_order: gmt_g1_23
+pd_gains:
+  stiffness:
+    - 100
+    - 100
+    - 100
+    - 150
+    - 40
+    - 40
+    - 100
+    - 100
+    - 100
+    - 150
+    - 40
+    - 40
+    - 150
+    - 150
+    - 150
+    - 40
+    - 40
+    - 40
+    - 40
+    - 40
+    - 40
+    - 40
+    - 40
+  damping:
+    - 2
+    - 2
+    - 2
+    - 4
+    - 2
+    - 2
+    - 2
+    - 2
+    - 2
+    - 4
+    - 2
+    - 2
+    - 4
+    - 4
+    - 4
+    - 5
+    - 5
+    - 5
+    - 5
+    - 5
+    - 5
+    - 5
+    - 5
+normalization:
+  ang_vel_scale: 0.25
+  dof_pos_scale: 1.0
+  dof_vel_scale: 0.05
+entry_conditions:
+  allowed_modes:
+    - matched_reference_frame
+    - near_stand_ready
+  max_root_height_diff: 0.08
+  max_roll_pitch: 0.15
+  max_root_lin_vel: 0.25
+  max_dof_vel_norm: 2.5
+exit_conditions:
+  fall_detection:
+    min_root_height: 0.20
+    max_body_tilt_deg: 120.0
+fallback:
+  tracker: none
+  skill: stable_stand_bridge

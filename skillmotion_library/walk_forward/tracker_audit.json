@@ -1,0 +1,7 @@
+{
+  "gmt_g1": {
+    "status": "validated_adapter_parity",
+    "validation": "scripts/validation/validate_tracker_adapter_parity.py",
+    "reference": "assets/motions/walk_stand.pkl[0:70]"
+  }
+}

@@ -1,6 +1,8 @@
 gmt:
   root: G:/Code/Python/Paper-Reproduction/GMT/humanoid-general-motion-tracking
   robot: g1
+  model_path: assets/robots/g1/g1.xml
+  policy_path: assets/pretrained_checkpoints/pretrained.pt
   device: auto
 
 runtime:
@@ -8,6 +10,11 @@ runtime:
   stop_on_failure: true
   keep_single_episode: true
   require_m0_contract: true
+
+skillmotion:
+  enabled: false
+  library_root: skillmotion_library
+  tracker_spec: configs/trackers/gmt_g1.yaml
 
 motion_assets:
   root: assets/motions
@@ -47,6 +54,41 @@ fall_detection:
   enabled: true
   min_root_height: 0.20
   max_body_tilt: 120.0
+
+execution_monitor:
+  enabled: true
+  low_success_margin: 0.30
+  max_seam_velocity: 0.10
+  max_abs_tilt: 1.0
+  max_tracking_maje: 0.20
+  recovery:
+    default_reentry_skill: stable_stand_bridge
+
+initial_stabilization:
+  enabled: true
+  stand_ready_skill: stable_stand_bridge
+  blend_frames: 30
+  hold_frames: 15
+  preserve_initial_root_height: false
+  reset_to_stand_ready: true
+  action_ramp_frames: 30
+
+transition_planner:
+  enabled: true
+  stand_ready_skill: stable_stand_bridge
+  skip_bridge:
+    max_dof_pos_mean_diff: 0.15
+    max_root_height_diff: 0.08
+    max_roll_pitch: 0.15
+    max_root_lin_vel: 0.25
+    max_dof_vel_norm: 2.5
+    # measured stand_ready -> airkick frame 0 mean dof gap is 0.3126 rad; the
+    # proven bridge-post hermite already crosses that gap in 24 frames
+    max_target_entry_dof_diff: 0.40
+  short_interp:
+    num_frames: 24
+    interpolation_mode: hermite
+    hermite_tension: 1.0
 
 matching:
   mode: pose_search         # "static" | "pose_search"

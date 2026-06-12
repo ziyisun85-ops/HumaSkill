@@ -1,0 +1,76 @@
+{
+  "segment_id": "stabilization_000_stand_ready",
+  "segment_type": "stabilization",
+  "skill_name": "stable_stand_bridge",
+  "success": true,
+  "num_frames": 74,
+  "source_motion_path": "assets/motions/walk_stand.pkl",
+  "start_frame": 0,
+  "end_frame": 0,
+  "target_duration": null,
+  "transition_type": "initial_stabilization",
+  "from_skill": null,
+  "to_skill": null,
+  "failed_reason": null,
+  "final_root_pos": [
+    -0.0015493817627429962,
+    0.025057338178157806,
+    0.7790828347206116
+  ],
+  "metrics": {
+    "maje": 0.051232293248176575,
+    "root_height_error": 0.014313952066004276,
+    "root_pos_error": 0.011991827748715878,
+    "root_rot_error": 0.08220680058002472,
+    "velocity_error": 0.03858451172709465,
+    "accel_error": 0.37171870470046997,
+    "success_margin": 0.5693877816200257,
+    "phase_lag_frame": -15,
+    "num_steps": 74,
+    "max_abs_roll": 0.04575720056891441,
+    "max_abs_pitch": 0.06515809893608093,
+    "mean_qvel_norm": 0.9162836074829102,
+    "max_qvel_norm": 11.195173263549805,
+    "mean_root_velocity_norm": 0.03858451172709465,
+    "max_root_velocity_norm": 0.2767706513404846,
+    "foot_contact_switch_count": 0,
+    "foot_contact_consistency": 1.0,
+    "foot_sliding": 0.07630563263228396
+  },
+  "diagnostics": {
+    "first_second_stability": {
+      "num_steps": 50,
+      "min_base_height": 0.7693877816200256,
+      "mean_base_height": 0.7803751230239868,
+      "max_base_height": 0.782300591468811,
+      "max_abs_roll": 0.04575720056891441,
+      "max_abs_pitch": 0.06302249431610107,
+      "max_qvel_norm": 11.195173263549805,
+      "mean_qvel_norm": 1.3058803081512451,
+      "max_root_velocity_norm": 0.2767706513404846,
+      "mean_root_velocity_norm": 0.04933488741517067,
+      "left_foot_contact_ratio": 1.0,
+      "right_foot_contact_ratio": 1.0,
+      "both_feet_contact_ratio": 1.0,
+      "no_foot_contact_ratio": 0.0
+    }
+  },
+  "transition_metrics": null,
+  "transition_plan": null,
+  "motion_source": {
+    "type": "skillmotion",
+    "library_entry": "stable_stand_bridge",
+    "source_type": "qpos_clip",
+    "source_asset": "assets/motions/walk_stand.pkl",
+    "role": {
+      "skill_type": "stabilization",
+      "recovery_tag": "safe_reentry",
+      "target_safe_state": "stand_ready"
+    }
+  },
+  "recovery": {
+    "enabled": true,
+    "events": [],
+    "recommendations": []
+  }
+}

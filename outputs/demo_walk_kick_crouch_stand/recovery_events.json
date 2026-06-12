@@ -1,0 +1,25 @@
+[
+  {
+    "segment_id": "skill_003_crouch_down",
+    "events": [
+      {
+        "event_type": "low_success_margin",
+        "severity": "warning",
+        "segment_id": "skill_003_crouch_down",
+        "message": "segment success margin is below warning threshold",
+        "metric": "success_margin",
+        "value": 0.28127901554107665,
+        "threshold": 0.3
+      }
+    ],
+    "recommendations": [
+      {
+        "event_type": "low_success_margin",
+        "action": "monitor_only",
+        "execute": false,
+        "skill": null,
+        "reason": "warning event logged; no recovery action executed in phase 1"
+      }
+    ]
+  }
+]

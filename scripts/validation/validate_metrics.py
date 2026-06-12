@@ -1,8 +1,8 @@
-"""Validate evaluation.py metric computation without MuJoCo or torch."""
+﻿"""Validate evaluation.py metric computation without MuJoCo or torch."""
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import numpy as np
 from middle_architecture.evaluation import EvaluationBuffer, compute_segment_metrics
@@ -69,3 +69,4 @@ json_str = json.dumps(d)
 assert "maje" in json_str
 
 print("\nAll assertions passed.")
+

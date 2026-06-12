@@ -1,0 +1,77 @@
+schema_version: 1
+identity:
+  name: stable_stand_bridge
+  robot: g1
+  fps: 29.932279909706544
+  num_frames: 222
+  dof: 23
+source:
+  type: qpos_clip
+  original_asset: assets/motions/walk_stand.pkl
+  adapter: QposClipAdapter
+  metadata:
+    gmt_motion_path: assets\motions\walk_stand.pkl
+role:
+  skill_type: stabilization
+  recovery_tag: safe_reentry
+  target_safe_state: stand_ready
+boundaries:
+  default_start_frame: 0
+  default_end_frame: null
+  entry_window_start: 0
+  entry_window_end: 11
+  exit_window_start: 195
+  exit_window_end: 222
+  entry_window_low_confidence: false
+  exit_window_low_confidence: false
+semantics:
+  description: bridge reference used to return to a stable standing-like state.
+  registry_motion_file: assets/motions/walk_stand.pkl
+  registry_matching_mode: null
+  feature_extraction:
+    config:
+      foot_body_indices:
+      - 6
+      - 14
+      foot_height_margin: 0.05
+      foot_vertical_velocity_threshold: 0.3
+      stable_root_velocity_threshold: 0.25
+      stable_dof_velocity_threshold: 0.9
+      min_stable_window_frames: 5
+      fallback_window_frames: 10
+    contact_columns:
+    - left
+    - right
+    contact_body_indices:
+    - 6
+    - 14
+    entry_window_low_confidence: false
+    exit_window_low_confidence: false
+tracking:
+  primary_tracker: gmt_g1
+  tracker_spec: configs/trackers/gmt_g1.yaml
+  playability: {}
+recovery:
+  enabled: true
+  recommended_reentry_skill: stable_stand_bridge
+  notes: target_safe_state=stand_ready
+trajectory:
+  root_quat_order: xyzw
+  dof_order: gmt_g1_23
+  units: meters_radians
+  qpos_shape:
+  - 222
+  - 30
+  qvel_shape:
+  - 222
+  - 29
+  local_body_pos_shape:
+  - 222
+  - 38
+  - 3
+arrays:
+  qpos: qpos.npy
+  qvel: qvel.npy
+  features: features.npz
+  tracker_audit: tracker_audit.json
+  local_body_pos: local_body_pos.npy

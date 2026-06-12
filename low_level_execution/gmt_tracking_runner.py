@@ -9,7 +9,12 @@ from typing import Optional
 import numpy as np
 import torch
 
-from middle_architecture.evaluation import EvaluationBuffer, SegmentMetrics, compute_segment_metrics
+from middle_architecture.evaluation import (
+    EvaluationBuffer,
+    SegmentMetrics,
+    compute_first_second_stability,
+    compute_segment_metrics,
+)
 from middle_architecture.robot_state import ReferenceFrames, RobotState
 
 
@@ -21,6 +26,7 @@ class RunnerTrackResult:
     video_path: Optional[str] = None
     failed_reason: Optional[str] = None
     metrics: Optional[SegmentMetrics] = None
+    diagnostics: Optional[dict] = None
 
 
 @dataclass
@@ -229,9 +235,20 @@ class _ReferenceSampler:
 
 
 class GMTTrackingRunner:
-    def __init__(self, gmt_root, robot, device="auto", fall_config=None, render=None):
+    def __init__(
+        self,
+        gmt_root,
+        robot,
+        device="auto",
+        fall_config=None,
+        render=None,
+        model_path=None,
+        policy_path=None,
+    ):
         self.gmt_root = Path(gmt_root)
         self.robot = robot
+        self.model_path = Path(model_path) if model_path is not None else None
+        self.policy_path = Path(policy_path) if policy_path is not None else None
         self.device = device
         self.torch_device = None
         self.fall_config = self._coerce_fall_config(fall_config)
@@ -242,6 +259,7 @@ class GMTTrackingRunner:
         self.policy_jit = None
         self.split_viewer = None
         self.initialized = False
+        self._foot_body_ids = None
 
         self.sim_duration = 60.0
         self.sim_dt = 0.001
@@ -395,6 +413,20 @@ class GMTTrackingRunner:
             raise RuntimeError("device='cuda' requested but CUDA is not available")
         return self.device
 
+    def _resolve_model_path(self) -> Path:
+        if self.model_path is None:
+            return self.gmt_root / "assets" / "robots" / self.robot / f"{self.robot}.xml"
+        if self.model_path.is_absolute():
+            return self.model_path
+        return (Path.cwd() / self.model_path).resolve()
+
+    def _resolve_policy_path(self) -> Path:
+        if self.policy_path is None:
+            return self.gmt_root / "assets" / "pretrained_checkpoints" / "pretrained.pt"
+        if self.policy_path.is_absolute():
+            return self.policy_path
+        return (Path.cwd() / self.policy_path).resolve()
+
     def initialize(self):
         if self.initialized:
             return
@@ -406,14 +438,14 @@ class GMTTrackingRunner:
         import mujoco
 
         self.torch_device = self._resolve_device()
-        model_path = self.gmt_root / "assets" / "robots" / "g1" / "g1.xml"
-        policy_path = self.gmt_root / "assets" / "pretrained_checkpoints" / "pretrained.pt"
+        model_path = self._resolve_model_path()
+        policy_path = self._resolve_policy_path()
         if not model_path.exists():
             raise FileNotFoundError(f"MuJoCo model not found: {model_path}")
         if not policy_path.exists():
             raise FileNotFoundError(f"Policy checkpoint not found: {policy_path}")
 
-        with _working_directory(self.gmt_root):
+        with _working_directory(model_path.parent):
             self.model = mujoco.MjModel.from_xml_path(str(model_path))
         self.model.opt.timestep = self.sim_dt
         self.data = mujoco.MjData(self.model)
@@ -446,6 +478,27 @@ class GMTTrackingRunner:
             dof_vel=qvel[-self.num_dofs :].copy(),
         )
 
+    def reset_to_reference_frame(self, reference_frames: ReferenceFrames) -> None:
+        self._require_initialized()
+        if reference_frames.root_pos.shape[0] < 1:
+            raise ValueError("reference_frames must contain at least one frame")
+
+        import mujoco
+
+        root_rot_xyzw = np.asarray(reference_frames.root_rot[0], dtype=np.float32)
+        root_quat_wxyz = np.array(
+            [root_rot_xyzw[3], root_rot_xyzw[0], root_rot_xyzw[1], root_rot_xyzw[2]],
+            dtype=np.float32,
+        )
+        self.data.qpos[:3] = np.asarray(reference_frames.root_pos[0], dtype=np.float32)
+        self.data.qpos[3:7] = root_quat_wxyz
+        self.data.qpos[-self.num_dofs :] = np.asarray(reference_frames.dof_pos[0], dtype=np.float32)
+        self.data.qvel[:] = 0.0
+        self.last_action = np.zeros(self.num_actions, dtype=np.float32)
+        self.pd_target = np.asarray(reference_frames.dof_pos[0], dtype=np.float32).copy()
+        mujoco.mj_forward(self.model, self.data)
+        self._fill_proprio_history_from_current_state()
+
     def _sample_reference_at_step(
         self, sampler: "_ReferenceSampler", control_step: int
     ):
@@ -457,8 +510,15 @@ class GMTTrackingRunner:
         self,
         reference_frames: ReferenceFrames,
         future_reference_frames: ReferenceFrames = None,
+        control_mode: str = "policy",
+        action_ramp_steps: int = 0,
+        segment_label: Optional[str] = None,
     ) -> RunnerTrackResult:
         self._require_initialized()
+        if self.split_viewer is not None:
+            self.split_viewer.set_label(segment_label)
+        if control_mode not in {"policy", "pd_hold"}:
+            raise ValueError(f"Unsupported control_mode: {control_mode}")
         sampler = _ReferenceSampler(reference_frames)
         future_sampler = (
             _ReferenceSampler(future_reference_frames)
@@ -470,15 +530,23 @@ class GMTTrackingRunner:
 
         for control_step in range(num_control_steps):
             ref_rp, ref_rr, ref_dof, ref_vel = self._sample_reference_at_step(sampler, control_step)
+            previous_action = self.last_action.copy()
 
-            obs = self._build_observation(sampler, control_step, future_sampler=future_sampler)
-            obs_tensor = torch.from_numpy(obs).float().unsqueeze(0).to(self.torch_device)
-            with torch.no_grad():
-                raw_action = self.policy_jit(obs_tensor).detach().cpu().numpy().squeeze()
-            self.last_action = raw_action.astype(np.float32).copy()
-            raw_action = np.clip(raw_action, -10.0, 10.0)
-            scaled_actions = raw_action * self.action_scale
-            self.pd_target = scaled_actions.astype(np.float32) + self.default_dof_pos
+            if control_mode == "pd_hold":
+                self.last_action = np.zeros(self.num_actions, dtype=np.float32)
+                self.pd_target = ref_dof.astype(np.float32).copy()
+            else:
+                obs = self._build_observation(sampler, control_step, future_sampler=future_sampler)
+                obs_tensor = torch.from_numpy(obs).float().unsqueeze(0).to(self.torch_device)
+                with torch.no_grad():
+                    raw_action = self.policy_jit(obs_tensor).detach().cpu().numpy().squeeze()
+                raw_action = np.clip(raw_action, -10.0, 10.0)
+                if action_ramp_steps > 0 and control_step < action_ramp_steps:
+                    alpha = float(control_step + 1) / float(action_ramp_steps)
+                    raw_action = (1.0 - alpha) * previous_action + alpha * raw_action
+                self.last_action = raw_action.astype(np.float32).copy()
+                scaled_actions = raw_action * self.action_scale
+                self.pd_target = scaled_actions.astype(np.float32) + self.default_dof_pos
 
             for _ in range(self.sim_decimation):
                 self._step_mujoco_physics()
@@ -486,6 +554,7 @@ class GMTTrackingRunner:
             self._render_frame(ref_rp, ref_rr, ref_dof)
 
             state = self.get_robot_state()
+            runtime_diag = self._capture_runtime_diagnostics(state)
             _buffer.record(
                 step=control_step,
                 tracked_root_pos=state.root_pos,
@@ -496,25 +565,49 @@ class GMTTrackingRunner:
                 ref_root_rot_xyzw=ref_rr,
                 ref_dof_pos=ref_dof,
                 ref_lin_vel=ref_vel,
+                base_roll=runtime_diag["base_roll"],
+                base_pitch=runtime_diag["base_pitch"],
+                qvel_norm=runtime_diag["qvel_norm"],
+                root_velocity_norm=runtime_diag["root_velocity_norm"],
+                foot_contacts=runtime_diag["foot_contacts"],
+                foot_positions=runtime_diag["foot_positions"],
             )
+            if control_mode == "pd_hold":
+                self.proprio_history_buf.append(self._compute_proprio_obs())
 
             if self._has_fallen():
                 metrics = compute_segment_metrics(
                     _buffer, self.control_dt, self.fall_config.min_root_height,
                     reference_fps=sampler.fps,
                 )
+                diagnostics = {
+                    "first_second_stability": compute_first_second_stability(
+                        _buffer, self.control_dt
+                    )
+                }
                 return RunnerTrackResult(
                     success=False,
                     num_frames=control_step + 1,
                     failed_reason="fell",
                     metrics=metrics,
+                    diagnostics=diagnostics,
                 )
 
         metrics = compute_segment_metrics(
             _buffer, self.control_dt, self.fall_config.min_root_height,
             reference_fps=sampler.fps,
         )
-        return RunnerTrackResult(success=True, num_frames=num_control_steps, metrics=metrics)
+        diagnostics = {
+            "first_second_stability": compute_first_second_stability(
+                _buffer, self.control_dt
+            )
+        }
+        return RunnerTrackResult(
+            success=True,
+            num_frames=num_control_steps,
+            metrics=metrics,
+            diagnostics=diagnostics,
+        )
 
     def _require_initialized(self):
         if not self.initialized:
@@ -527,17 +620,7 @@ class GMTTrackingRunner:
         ang_vel = self.data.sensor("angular-velocity").data.astype(np.float32)
         return dof_pos.copy(), dof_vel.copy(), quat.copy(), ang_vel.copy()
 
-    def _build_observation(
-        self,
-        sampler: _ReferenceSampler,
-        control_step: int,
-        future_sampler: _ReferenceSampler = None,
-    ) -> np.ndarray:
-        mimic_obs = self._get_mimic_obs(
-            sampler,
-            control_step,
-            future_sampler=future_sampler,
-        )
+    def _compute_proprio_obs(self) -> np.ndarray:
         dof_pos, dof_vel, quat, ang_vel = self._extract_data()
         rpy = _quat_wxyz_to_euler(quat)
         obs_dof_vel = dof_vel.copy()
@@ -553,6 +636,76 @@ class GMTTrackingRunner:
         ).astype(np.float32)
         if obs_prop.shape[0] != self.n_proprio:
             raise RuntimeError(f"Expected proprio dim {self.n_proprio}, got {obs_prop.shape[0]}")
+        return obs_prop
+
+    def _fill_proprio_history_from_current_state(self) -> None:
+        obs_prop = self._compute_proprio_obs()
+        self.proprio_history_buf.clear()
+        for _ in range(self.history_len):
+            self.proprio_history_buf.append(obs_prop.copy())
+
+    def _get_foot_body_ids(self):
+        if self._foot_body_ids is not None:
+            return self._foot_body_ids
+        ids = {}
+        for foot, body_name in {
+            "left": "left_ankle_roll_link",
+            "right": "right_ankle_roll_link",
+        }.items():
+            try:
+                ids[foot] = int(self.model.body(body_name).id)
+            except Exception:
+                ids[foot] = None
+        self._foot_body_ids = ids
+        return ids
+
+    def _get_foot_contacts(self):
+        foot_ids = self._get_foot_body_ids()
+        contacts = {foot: False for foot in foot_ids}
+        if not contacts:
+            return contacts
+        for i in range(int(self.data.ncon)):
+            contact = self.data.contact[i]
+            body1 = int(self.model.geom_bodyid[int(contact.geom1)])
+            body2 = int(self.model.geom_bodyid[int(contact.geom2)])
+            for foot, body_id in foot_ids.items():
+                if body_id is not None and (body1 == body_id or body2 == body_id):
+                    contacts[foot] = True
+        return contacts
+
+    def _get_foot_positions(self):
+        positions = {}
+        for foot, body_id in self._get_foot_body_ids().items():
+            if body_id is None:
+                continue
+            positions[foot] = self.data.xpos[body_id].astype(np.float32).copy()
+        return positions
+
+    def _capture_runtime_diagnostics(self, state: RobotState):
+        rpy = _quat_wxyz_to_euler(state.root_quat)
+        qvel = self.data.qvel.astype(np.float32)
+        root_velocity_norm = float(np.linalg.norm(state.root_lin_vel))
+        return {
+            "base_roll": float(rpy[0]),
+            "base_pitch": float(rpy[1]),
+            "qvel_norm": float(np.linalg.norm(qvel)),
+            "root_velocity_norm": root_velocity_norm,
+            "foot_contacts": self._get_foot_contacts(),
+            "foot_positions": self._get_foot_positions(),
+        }
+
+    def _build_observation(
+        self,
+        sampler: _ReferenceSampler,
+        control_step: int,
+        future_sampler: _ReferenceSampler = None,
+    ) -> np.ndarray:
+        mimic_obs = self._get_mimic_obs(
+            sampler,
+            control_step,
+            future_sampler=future_sampler,
+        )
+        obs_prop = self._compute_proprio_obs()
         obs_hist = np.array(self.proprio_history_buf, dtype=np.float32).flatten()
         obs_buf = np.concatenate([mimic_obs, obs_prop, obs_hist]).astype(np.float32)
         self.proprio_history_buf.append(obs_prop)

@@ -30,7 +30,8 @@ class MotionMatcher:
         self.match_config = match_config or MatchConfig()
 
     def select(self, robot_state, skill_spec, motion, duration=None) -> MatchResult:
-        if self.match_config.mode == "pose_search":
+        mode = getattr(skill_spec, "matching_mode", None) or self.match_config.mode
+        if mode == "pose_search":
             return self._pose_search_select(robot_state, skill_spec, motion, duration)
         return self._static_select(robot_state, skill_spec, motion, duration)
 

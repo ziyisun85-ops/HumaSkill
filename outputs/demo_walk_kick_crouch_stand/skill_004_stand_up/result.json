@@ -13,20 +13,64 @@
   "to_skill": null,
   "failed_reason": null,
   "final_root_pos": [
-    3.593369960784912,
-    -4.880413055419922,
-    0.7852572798728943
+    1.2138361930847168,
+    -5.85521125793457,
+    0.7852888107299805
   ],
   "metrics": {
-    "maje": 0.060592230409383774,
-    "root_height_error": 0.006929325871169567,
-    "root_pos_error": 0.06296305358409882,
-    "root_rot_error": 0.06893739104270935,
-    "velocity_error": 0.11964685469865799,
-    "accel_error": 1.443952202796936,
-    "success_margin": 0.5512944340705872,
+    "maje": 0.060837339609861374,
+    "root_height_error": 0.006740571931004524,
+    "root_pos_error": 0.07556518167257309,
+    "root_rot_error": 0.07426192611455917,
+    "velocity_error": 0.12141068279743195,
+    "accel_error": 1.4471923112869263,
+    "success_margin": 0.5514163851737977,
     "phase_lag_frame": -2,
-    "num_steps": 355
+    "num_steps": 355,
+    "max_abs_roll": 0.07451633363962173,
+    "max_abs_pitch": 0.12323377281427383,
+    "mean_qvel_norm": 3.326511859893799,
+    "max_qvel_norm": 8.50771427154541,
+    "mean_root_velocity_norm": 0.5255753993988037,
+    "max_root_velocity_norm": 1.0269033908843994,
+    "foot_contact_switch_count": 17,
+    "foot_contact_consistency": 0.9759887005649718,
+    "foot_sliding": 0.4925612246061064
   },
-  "transition_metrics": null
+  "diagnostics": {
+    "first_second_stability": {
+      "num_steps": 50,
+      "min_base_height": 0.760059118270874,
+      "mean_base_height": 0.7759170532226562,
+      "max_base_height": 0.7825620174407959,
+      "max_abs_roll": 0.035326700657606125,
+      "max_abs_pitch": 0.10369987040758133,
+      "max_qvel_norm": 5.236828327178955,
+      "mean_qvel_norm": 3.138500452041626,
+      "max_root_velocity_norm": 0.6104958653450012,
+      "mean_root_velocity_norm": 0.40444785356521606,
+      "left_foot_contact_ratio": 0.64,
+      "right_foot_contact_ratio": 0.6,
+      "both_feet_contact_ratio": 0.24,
+      "no_foot_contact_ratio": 0.0
+    }
+  },
+  "transition_metrics": null,
+  "transition_plan": null,
+  "motion_source": {
+    "type": "skillmotion",
+    "library_entry": "stand_up",
+    "source_type": "qpos_clip",
+    "source_asset": "assets/motions/walk_stand.pkl",
+    "role": {
+      "skill_type": "stabilization",
+      "recovery_tag": "normal",
+      "target_safe_state": null
+    }
+  },
+  "recovery": {
+    "enabled": true,
+    "events": [],
+    "recommendations": []
+  }
 }

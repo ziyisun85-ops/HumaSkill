@@ -13,28 +13,115 @@
   "to_skill": "kick_leg",
   "failed_reason": null,
   "final_root_pos": [
-    1.6882851123809814,
-    -1.6710883378982544,
-    0.766342043876648
+    0.6105906963348389,
+    -2.4516966342926025,
+    0.7579772472381592
   ],
   "metrics": {
-    "maje": 0.04378725215792656,
-    "root_height_error": 0.005910798441618681,
-    "root_pos_error": 0.0357375293970108,
-    "root_rot_error": 0.06821221113204956,
-    "velocity_error": 0.1475026160478592,
-    "accel_error": 1.2899229526519775,
-    "success_margin": 0.5622255682945252,
-    "phase_lag_frame": 14,
-    "num_steps": 39
+    "maje": 0.05242924764752388,
+    "root_height_error": 0.007416081614792347,
+    "root_pos_error": 0.03252432122826576,
+    "root_rot_error": 0.07273001968860626,
+    "velocity_error": 0.1526007503271103,
+    "accel_error": 1.5646244287490845,
+    "success_margin": 0.548830795288086,
+    "phase_lag_frame": 5,
+    "num_steps": 39,
+    "max_abs_roll": 0.03133291006088257,
+    "max_abs_pitch": 0.18637816607952118,
+    "mean_qvel_norm": 3.764462947845459,
+    "max_qvel_norm": 5.712863445281982,
+    "mean_root_velocity_norm": 0.16043387353420258,
+    "max_root_velocity_norm": 0.3621722459793091,
+    "foot_contact_switch_count": 3,
+    "foot_contact_consistency": 0.9605263157894737,
+    "foot_sliding": 0.018622892390339985
+  },
+  "diagnostics": {
+    "first_second_stability": {
+      "num_steps": 39,
+      "min_base_height": 0.7488307952880859,
+      "mean_base_height": 0.7629191875457764,
+      "max_base_height": 0.7844841480255127,
+      "max_abs_roll": 0.03133291006088257,
+      "max_abs_pitch": 0.18637816607952118,
+      "max_qvel_norm": 5.712863445281982,
+      "mean_qvel_norm": 3.764462947845459,
+      "max_root_velocity_norm": 0.3621722459793091,
+      "mean_root_velocity_norm": 0.16043387353420258,
+      "left_foot_contact_ratio": 0.6923076923076923,
+      "right_foot_contact_ratio": 0.7692307692307693,
+      "both_feet_contact_ratio": 0.46153846153846156,
+      "no_foot_contact_ratio": 0.0
+    }
   },
   "transition_metrics": {
-    "seam_vel_delta": 0.029531698673963547,
-    "seam_accel_delta": 0.9840848445892334,
-    "peak_jerk": 1.689856767654419,
-    "mean_jerk": 1.6840727746486663,
-    "auj": 1.1252552626988825,
+    "seam_vel_delta": 0.012741085141897202,
+    "seam_accel_delta": 2.068711280822754,
+    "peak_jerk": 2.764289379119873,
+    "mean_jerk": 2.761075270175934,
+    "auj": 1.8448813645368607,
     "interpolation_mode": "hermite",
-    "num_frames": 24
+    "num_frames": 24,
+    "root_position_jump": 0.0,
+    "root_yaw_jump_deg": 1.3608601021699585e-05,
+    "root_height_jump": 0.0,
+    "base_velocity_jump": 0.012741085141897202,
+    "dof_position_jump_mean": 0.0,
+    "dof_position_jump_max": 0.0,
+    "phase_compatibility_score": 0.9968195595496038
+  },
+  "transition_plan": {
+    "decision": "keep_bridge_not_stand_ready",
+    "reason": "failed_criteria:root_lin_vel_norm,dof_vel_norm",
+    "diagnostics": {
+      "stand_ready_skill": "stable_stand_bridge",
+      "stand_ready_frame": 0,
+      "target_entry_frame": 0,
+      "criteria": {
+        "dof_pos_mean_diff": {
+          "value": 0.14748458564281464,
+          "threshold": 0.15,
+          "passed": true
+        },
+        "root_height_diff": {
+          "value": 0.012682795524597168,
+          "threshold": 0.08,
+          "passed": true
+        },
+        "roll_pitch": {
+          "value": 0.059268225446377415,
+          "threshold": 0.15,
+          "passed": true
+        },
+        "root_lin_vel_norm": {
+          "value": 0.5517762899398804,
+          "threshold": 0.25,
+          "passed": false
+        },
+        "dof_vel_norm": {
+          "value": 8.416431427001953,
+          "threshold": 2.5,
+          "passed": false
+        },
+        "target_entry_dof_diff": {
+          "value": 0.3158673346042633,
+          "threshold": 0.4,
+          "passed": true
+        }
+      }
+    }
+  },
+  "motion_source": {
+    "type": "skillmotion",
+    "library_entry": null,
+    "source_type": "generated_reference",
+    "source_asset": null,
+    "role": null
+  },
+  "recovery": {
+    "enabled": true,
+    "events": [],
+    "recommendations": []
   }
 }

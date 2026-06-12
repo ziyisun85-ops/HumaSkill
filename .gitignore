@@ -20,3 +20,14 @@ Thumbs.db
 # Local simulator caches and heavy state dumps.
 outputs/**/robot_state_final.npz
 outputs/screenshots/
+outputs/**/*.mp4
+
+# Local planning/scratch files.
+memory/
+claude_code_choreo_docs_prompt.md
+
+# Generated validation reruns; keep only the documented C7 A/B comparison files.
+outputs/choreo_pipeline_parity/
+outputs/choreo_ab/*
+!outputs/choreo_ab/comparison.json
+!outputs/choreo_ab/comparison.md

@@ -1,5 +1,33 @@
 [
   {
+    "segment_id": "stabilization_000_stand_ready",
+    "segment_type": "stabilization",
+    "skill_name": "stable_stand_bridge",
+    "success": true,
+    "num_frames": 74,
+    "source_motion_path": "assets/motions/walk_stand.pkl",
+    "log_path": "outputs\\demo_walk_kick_crouch_stand\\stabilization_000_stand_ready\\result.json",
+    "failed_reason": null,
+    "diagnostics": {
+      "first_second_stability": {
+        "num_steps": 50,
+        "min_base_height": 0.7693877816200256,
+        "mean_base_height": 0.7803751230239868,
+        "max_base_height": 0.782300591468811,
+        "max_abs_roll": 0.04575720056891441,
+        "max_abs_pitch": 0.06302249431610107,
+        "max_qvel_norm": 11.195173263549805,
+        "mean_qvel_norm": 1.3058803081512451,
+        "max_root_velocity_norm": 0.2767706513404846,
+        "mean_root_velocity_norm": 0.04933488741517067,
+        "left_foot_contact_ratio": 1.0,
+        "right_foot_contact_ratio": 1.0,
+        "both_feet_contact_ratio": 1.0,
+        "no_foot_contact_ratio": 0.0
+      }
+    }
+  },
+  {
     "segment_id": "skill_001_walk_forward",
     "segment_type": "skill",
     "skill_name": "walk_forward",
@@ -7,7 +35,25 @@
     "num_frames": 499,
     "source_motion_path": "assets/motions/basic_walk.pkl",
     "log_path": "outputs\\demo_walk_kick_crouch_stand\\skill_001_walk_forward\\result.json",
-    "failed_reason": null
+    "failed_reason": null,
+    "diagnostics": {
+      "first_second_stability": {
+        "num_steps": 50,
+        "min_base_height": 0.7671911716461182,
+        "mean_base_height": 0.7777892351150513,
+        "max_base_height": 0.7841343879699707,
+        "max_abs_roll": 0.03532712534070015,
+        "max_abs_pitch": 0.09991873800754547,
+        "max_qvel_norm": 8.061741828918457,
+        "mean_qvel_norm": 4.151236057281494,
+        "max_root_velocity_norm": 0.6916314959526062,
+        "mean_root_velocity_norm": 0.32321974635124207,
+        "left_foot_contact_ratio": 0.56,
+        "right_foot_contact_ratio": 0.5,
+        "both_feet_contact_ratio": 0.06,
+        "no_foot_contact_ratio": 0.0
+      }
+    }
   },
   {
     "segment_id": "transition_001_walk_forward_to_kick_leg_body",
@@ -17,7 +63,25 @@
     "num_frames": 403,
     "source_motion_path": "assets/motions/walk_stand.pkl",
     "log_path": "outputs\\demo_walk_kick_crouch_stand\\transition_001_walk_forward_to_kick_leg_body\\result.json",
-    "failed_reason": null
+    "failed_reason": null,
+    "diagnostics": {
+      "first_second_stability": {
+        "num_steps": 50,
+        "min_base_height": 0.7685359716415405,
+        "mean_base_height": 0.7770107984542847,
+        "max_base_height": 0.7804747819900513,
+        "max_abs_roll": 0.05550187826156616,
+        "max_abs_pitch": 0.0846053957939148,
+        "max_qvel_norm": 4.730700969696045,
+        "mean_qvel_norm": 1.8347102403640747,
+        "max_root_velocity_norm": 0.4550475478172302,
+        "mean_root_velocity_norm": 0.17216520011425018,
+        "left_foot_contact_ratio": 0.94,
+        "right_foot_contact_ratio": 0.6,
+        "both_feet_contact_ratio": 0.54,
+        "no_foot_contact_ratio": 0.0
+      }
+    }
   },
   {
     "segment_id": "transition_001_walk_forward_to_kick_leg_post",
@@ -27,17 +91,53 @@
     "num_frames": 39,
     "source_motion_path": null,
     "log_path": "outputs\\demo_walk_kick_crouch_stand\\transition_001_walk_forward_to_kick_leg_post\\result.json",
-    "failed_reason": null
+    "failed_reason": null,
+    "diagnostics": {
+      "first_second_stability": {
+        "num_steps": 39,
+        "min_base_height": 0.7488307952880859,
+        "mean_base_height": 0.7629191875457764,
+        "max_base_height": 0.7844841480255127,
+        "max_abs_roll": 0.03133291006088257,
+        "max_abs_pitch": 0.18637816607952118,
+        "max_qvel_norm": 5.712863445281982,
+        "mean_qvel_norm": 3.764462947845459,
+        "max_root_velocity_norm": 0.3621722459793091,
+        "mean_root_velocity_norm": 0.16043387353420258,
+        "left_foot_contact_ratio": 0.6923076923076923,
+        "right_foot_contact_ratio": 0.7692307692307693,
+        "both_feet_contact_ratio": 0.46153846153846156,
+        "no_foot_contact_ratio": 0.0
+      }
+    }
   },
   {
     "segment_id": "skill_002_kick_leg",
     "segment_type": "skill",
     "skill_name": "kick_leg",
     "success": true,
-    "num_frames": 310,
+    "num_frames": 333,
     "source_motion_path": "assets/motions/airkick_stand.pkl",
     "log_path": "outputs\\demo_walk_kick_crouch_stand\\skill_002_kick_leg\\result.json",
-    "failed_reason": null
+    "failed_reason": null,
+    "diagnostics": {
+      "first_second_stability": {
+        "num_steps": 50,
+        "min_base_height": 0.7560412287712097,
+        "mean_base_height": 0.7616989016532898,
+        "max_base_height": 0.7690262198448181,
+        "max_abs_roll": 0.032146189361810684,
+        "max_abs_pitch": 0.17461678385734558,
+        "max_qvel_norm": 5.217248916625977,
+        "mean_qvel_norm": 3.1325087547302246,
+        "max_root_velocity_norm": 0.2835035026073456,
+        "mean_root_velocity_norm": 0.1585119664669037,
+        "left_foot_contact_ratio": 0.8,
+        "right_foot_contact_ratio": 0.94,
+        "both_feet_contact_ratio": 0.74,
+        "no_foot_contact_ratio": 0.0
+      }
+    }
   },
   {
     "segment_id": "transition_002_kick_leg_to_crouch_down",
@@ -47,7 +147,25 @@
     "num_frames": 20,
     "source_motion_path": null,
     "log_path": "outputs\\demo_walk_kick_crouch_stand\\transition_002_kick_leg_to_crouch_down\\result.json",
-    "failed_reason": null
+    "failed_reason": null,
+    "diagnostics": {
+      "first_second_stability": {
+        "num_steps": 20,
+        "min_base_height": 0.7773918509483337,
+        "mean_base_height": 0.7790207266807556,
+        "max_base_height": 0.7799732685089111,
+        "max_abs_roll": 0.008584233932197094,
+        "max_abs_pitch": 0.14714746177196503,
+        "max_qvel_norm": 3.206118106842041,
+        "mean_qvel_norm": 1.7188421487808228,
+        "max_root_velocity_norm": 0.07157813012599945,
+        "mean_root_velocity_norm": 0.04303460568189621,
+        "left_foot_contact_ratio": 1.0,
+        "right_foot_contact_ratio": 1.0,
+        "both_feet_contact_ratio": 1.0,
+        "no_foot_contact_ratio": 0.0
+      }
+    }
   },
   {
     "segment_id": "skill_003_crouch_down",
@@ -57,7 +175,25 @@
     "num_frames": 203,
     "source_motion_path": "assets/motions/squat.pkl",
     "log_path": "outputs\\demo_walk_kick_crouch_stand\\skill_003_crouch_down\\result.json",
-    "failed_reason": null
+    "failed_reason": null,
+    "diagnostics": {
+      "first_second_stability": {
+        "num_steps": 50,
+        "min_base_height": 0.7800313234329224,
+        "mean_base_height": 0.7808612585067749,
+        "max_base_height": 0.7829134464263916,
+        "max_abs_roll": 0.019037481397390366,
+        "max_abs_pitch": 0.05881214886903763,
+        "max_qvel_norm": 2.6645870208740234,
+        "mean_qvel_norm": 1.8728833198547363,
+        "max_root_velocity_norm": 0.06560183316469193,
+        "mean_root_velocity_norm": 0.039394810795784,
+        "left_foot_contact_ratio": 1.0,
+        "right_foot_contact_ratio": 1.0,
+        "both_feet_contact_ratio": 1.0,
+        "no_foot_contact_ratio": 0.0
+      }
+    }
   },
   {
     "segment_id": "transition_003_crouch_down_to_stand_up",
@@ -67,7 +203,25 @@
     "num_frames": 32,
     "source_motion_path": null,
     "log_path": "outputs\\demo_walk_kick_crouch_stand\\transition_003_crouch_down_to_stand_up\\result.json",
-    "failed_reason": null
+    "failed_reason": null,
+    "diagnostics": {
+      "first_second_stability": {
+        "num_steps": 32,
+        "min_base_height": 0.7813417911529541,
+        "mean_base_height": 0.7843629717826843,
+        "max_base_height": 0.786052942276001,
+        "max_abs_roll": 0.01875453069806099,
+        "max_abs_pitch": 0.09750925749540329,
+        "max_qvel_norm": 4.582244873046875,
+        "mean_qvel_norm": 2.7789011001586914,
+        "max_root_velocity_norm": 0.1779007762670517,
+        "mean_root_velocity_norm": 0.11705982685089111,
+        "left_foot_contact_ratio": 1.0,
+        "right_foot_contact_ratio": 0.96875,
+        "both_feet_contact_ratio": 0.96875,
+        "no_foot_contact_ratio": 0.0
+      }
+    }
   },
   {
     "segment_id": "skill_004_stand_up",
@@ -77,6 +231,24 @@
     "num_frames": 355,
     "source_motion_path": "assets/motions/walk_stand.pkl",
     "log_path": "outputs\\demo_walk_kick_crouch_stand\\skill_004_stand_up\\result.json",
-    "failed_reason": null
+    "failed_reason": null,
+    "diagnostics": {
+      "first_second_stability": {
+        "num_steps": 50,
+        "min_base_height": 0.760059118270874,
+        "mean_base_height": 0.7759170532226562,
+        "max_base_height": 0.7825620174407959,
+        "max_abs_roll": 0.035326700657606125,
+        "max_abs_pitch": 0.10369987040758133,
+        "max_qvel_norm": 5.236828327178955,
+        "mean_qvel_norm": 3.138500452041626,
+        "max_root_velocity_norm": 0.6104958653450012,
+        "mean_root_velocity_norm": 0.40444785356521606,
+        "left_foot_contact_ratio": 0.64,
+        "right_foot_contact_ratio": 0.6,
+        "both_feet_contact_ratio": 0.24,
+        "no_foot_contact_ratio": 0.0
+      }
+    }
   }
 ]

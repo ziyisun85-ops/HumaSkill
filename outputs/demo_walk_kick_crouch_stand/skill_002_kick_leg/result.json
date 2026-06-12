@@ -3,9 +3,9 @@
   "segment_type": "skill",
   "skill_name": "kick_leg",
   "success": true,
-  "num_frames": 310,
+  "num_frames": 333,
   "source_motion_path": "assets/motions/airkick_stand.pkl",
-  "start_frame": 14,
+  "start_frame": 0,
   "end_frame": 200,
   "target_duration": null,
   "transition_type": null,
@@ -13,20 +13,64 @@
   "to_skill": null,
   "failed_reason": null,
   "final_root_pos": [
-    1.7605130672454834,
-    -1.8706234693527222,
-    0.7779628038406372
+    0.5489130020141602,
+    -2.39536190032959,
+    0.7777259945869446
   ],
   "metrics": {
-    "maje": 0.089145228266716,
-    "root_height_error": 0.01704310066998005,
-    "root_pos_error": 0.13689278066158295,
-    "root_rot_error": 0.11093279719352722,
-    "velocity_error": 0.1703176647424698,
-    "accel_error": 2.1755435466766357,
-    "success_margin": 0.5014252543449402,
-    "phase_lag_frame": 15,
-    "num_steps": 310
+    "maje": 0.08698096871376038,
+    "root_height_error": 0.011960236355662346,
+    "root_pos_error": 0.11126534640789032,
+    "root_rot_error": 0.18179917335510254,
+    "velocity_error": 0.15406040847301483,
+    "accel_error": 2.0919034481048584,
+    "success_margin": 0.5039663791656495,
+    "phase_lag_frame": 5,
+    "num_steps": 333,
+    "max_abs_roll": 0.65582275390625,
+    "max_abs_pitch": 0.71465003490448,
+    "mean_qvel_norm": 4.040469169616699,
+    "max_qvel_norm": 16.929893493652344,
+    "mean_root_velocity_norm": 0.23758694529533386,
+    "max_root_velocity_norm": 0.7128687500953674,
+    "foot_contact_switch_count": 16,
+    "foot_contact_consistency": 0.9759036144578314,
+    "foot_sliding": 0.27746459100762877
   },
-  "transition_metrics": null
+  "diagnostics": {
+    "first_second_stability": {
+      "num_steps": 50,
+      "min_base_height": 0.7560412287712097,
+      "mean_base_height": 0.7616989016532898,
+      "max_base_height": 0.7690262198448181,
+      "max_abs_roll": 0.032146189361810684,
+      "max_abs_pitch": 0.17461678385734558,
+      "max_qvel_norm": 5.217248916625977,
+      "mean_qvel_norm": 3.1325087547302246,
+      "max_root_velocity_norm": 0.2835035026073456,
+      "mean_root_velocity_norm": 0.1585119664669037,
+      "left_foot_contact_ratio": 0.8,
+      "right_foot_contact_ratio": 0.94,
+      "both_feet_contact_ratio": 0.74,
+      "no_foot_contact_ratio": 0.0
+    }
+  },
+  "transition_metrics": null,
+  "transition_plan": null,
+  "motion_source": {
+    "type": "skillmotion",
+    "library_entry": "kick_leg",
+    "source_type": "qpos_clip",
+    "source_asset": "assets/motions/airkick_stand.pkl",
+    "role": {
+      "skill_type": "locomotion",
+      "recovery_tag": "dynamic",
+      "target_safe_state": null
+    }
+  },
+  "recovery": {
+    "enabled": true,
+    "events": [],
+    "recommendations": []
+  }
 }

@@ -28,9 +28,24 @@ def main():
     parser.add_argument("--sequence", default=None)
     parser.add_argument("--skills", default="configs/skills.yaml")
     parser.add_argument("--transitions", default="configs/transitions.yaml")
+    parser.add_argument(
+        "--motion-source",
+        choices=["registry", "skillmotion"],
+        default=None,
+        help="override configs/harness.yaml skillmotion.enabled for this run",
+    )
+    parser.add_argument(
+        "--render",
+        action="store_true",
+        help="show the live split-screen viewer (reference | tracker); "
+        "also enabled by setting HUMASKILL_RENDER=1",
+    )
     args = parser.parse_args()
 
     config = load_harness_config(args.config)
+    if args.motion_source is not None:
+        config.setdefault("skillmotion", {})
+        config["skillmotion"]["enabled"] = args.motion_source == "skillmotion"
     sequence_path = args.sequence or config["sequence"]["default_task"]
     skill_plan = parse_task_sequence(sequence_path)
     skill_registry = SkillRegistry.from_yaml(args.skills)
@@ -42,7 +57,10 @@ def main():
         gmt_root=config["gmt"]["root"],
         robot=config["gmt"].get("robot", "g1"),
         device=config["gmt"].get("device", "auto"),
+        model_path=config["gmt"].get("model_path"),
+        policy_path=config["gmt"].get("policy_path"),
         fall_config=config.get("fall_detection"),
+        render=True if args.render else None,
     )
     orchestrator = HarnessOrchestrator(
         runner=runner,

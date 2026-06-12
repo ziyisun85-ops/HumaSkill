@@ -1,10 +1,10 @@
-"""Validate hermite_interpolate_reference_frames and compute_transition_metrics.
+﻿"""Validate hermite_interpolate_reference_frames and compute_transition_metrics.
 No MuJoCo or torch required.
 """
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import numpy as np
 from middle_architecture.robot_state import KinematicFrame, ReferenceFrames
@@ -114,3 +114,4 @@ print(f"  peak_jerk: {tight_metrics.peak_jerk:.4f} < {full_metrics.peak_jerk:.4f
 print(f"  endpoints preserved at both tension values  ✓")
 
 print("\nAll assertions passed.")
+

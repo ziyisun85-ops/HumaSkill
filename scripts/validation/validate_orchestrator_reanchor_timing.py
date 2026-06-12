@@ -1,4 +1,4 @@
-"""Validate that skill clips are reanchored after transition execution.
+﻿"""Validate that skill clips are reanchored after transition execution.
 
 The orchestrator should not anchor the next skill to the pre-transition state.
 This MuJoCo-free regression test uses a fake runner whose transition call moves
@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 from types import SimpleNamespace
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import numpy as np
 
@@ -146,3 +146,4 @@ print("Second skill first reference root:", second_skill_first_root.tolist())
 np.testing.assert_allclose(second_skill_first_root, expected, atol=1e-5)
 
 print("\nAll assertions passed.")
+

@@ -71,3 +71,10 @@ class TransitionMetrics:
     auj: float
     interpolation_mode: str
     num_frames: int
+    root_position_jump: float = 0.0
+    root_yaw_jump_deg: float = 0.0
+    root_height_jump: float = 0.0
+    base_velocity_jump: float = 0.0
+    dof_position_jump_mean: float = 0.0
+    dof_position_jump_max: float = 0.0
+    phase_compatibility_score: float = 1.0

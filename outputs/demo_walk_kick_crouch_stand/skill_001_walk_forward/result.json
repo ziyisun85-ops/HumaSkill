@@ -13,20 +13,64 @@
   "to_skill": null,
   "failed_reason": null,
   "final_root_pos": [
-    -1.4928315877914429,
-    0.2050120085477829,
-    0.796445906162262
+    -2.152226686477661,
+    0.05691034346818924,
+    0.7783675193786621
   ],
   "metrics": {
-    "maje": 0.0715835839509964,
-    "root_height_error": 0.19838199019432068,
-    "root_pos_error": 0.7882354259490967,
-    "root_rot_error": 0.648786723613739,
-    "velocity_error": 0.4434051215648651,
-    "accel_error": 2.7194597721099854,
-    "success_margin": 0.5674866914749146,
+    "maje": 0.06667342036962509,
+    "root_height_error": 0.0032204848248511553,
+    "root_pos_error": 0.3740151524543762,
+    "root_rot_error": 0.23127371072769165,
+    "velocity_error": 0.25226226449012756,
+    "accel_error": 1.7378592491149902,
+    "success_margin": 0.5550278306007386,
     "phase_lag_frame": -15,
-    "num_steps": 499
+    "num_steps": 499,
+    "max_abs_roll": 0.04047146812081337,
+    "max_abs_pitch": 0.10481660068035126,
+    "mean_qvel_norm": 4.290309906005859,
+    "max_qvel_norm": 8.475915908813477,
+    "mean_root_velocity_norm": 0.620671272277832,
+    "max_root_velocity_norm": 0.9991518259048462,
+    "foot_contact_switch_count": 35,
+    "foot_contact_consistency": 0.964859437751004,
+    "foot_sliding": 0.6468762907588825
   },
-  "transition_metrics": null
+  "diagnostics": {
+    "first_second_stability": {
+      "num_steps": 50,
+      "min_base_height": 0.7671911716461182,
+      "mean_base_height": 0.7777892351150513,
+      "max_base_height": 0.7841343879699707,
+      "max_abs_roll": 0.03532712534070015,
+      "max_abs_pitch": 0.09991873800754547,
+      "max_qvel_norm": 8.061741828918457,
+      "mean_qvel_norm": 4.151236057281494,
+      "max_root_velocity_norm": 0.6916314959526062,
+      "mean_root_velocity_norm": 0.32321974635124207,
+      "left_foot_contact_ratio": 0.56,
+      "right_foot_contact_ratio": 0.5,
+      "both_feet_contact_ratio": 0.06,
+      "no_foot_contact_ratio": 0.0
+    }
+  },
+  "transition_metrics": null,
+  "transition_plan": null,
+  "motion_source": {
+    "type": "skillmotion",
+    "library_entry": "walk_forward",
+    "source_type": "qpos_clip",
+    "source_asset": "assets/motions/basic_walk.pkl",
+    "role": {
+      "skill_type": "locomotion",
+      "recovery_tag": "normal",
+      "target_safe_state": null
+    }
+  },
+  "recovery": {
+    "enabled": true,
+    "events": [],
+    "recommendations": []
+  }
 }

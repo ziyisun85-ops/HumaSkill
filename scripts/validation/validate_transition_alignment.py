@@ -1,4 +1,4 @@
-"""Validate transition reference alignment at bridge seams.
+﻿"""Validate transition reference alignment at bridge seams.
 
 This script is intentionally MuJoCo-free. It checks that bridge transition
 reference frames preserve root XY/yaw continuity when the current robot state
@@ -8,7 +8,7 @@ import math
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import numpy as np
 
@@ -70,3 +70,4 @@ assert xy_jump < 0.05, f"Expected bridge body XY continuity, got {xy_jump:.6f} m
 assert yaw_jump_deg < 3.0, f"Expected bridge body yaw continuity, got {yaw_jump_deg:.6f} deg"
 
 print("\nAll assertions passed.")
+

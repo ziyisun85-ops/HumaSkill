@@ -1,8 +1,8 @@
-"""Validate MotionMatcher static and pose_search modes. No MuJoCo or torch required."""
+﻿"""Validate MotionMatcher static and pose_search modes. No MuJoCo or torch required."""
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import numpy as np
 import yaml
@@ -81,3 +81,4 @@ assert score_at_probe < score_at_distant, (
 )
 
 print("\nAll assertions passed.")
+

@@ -32,6 +32,11 @@ class SplitScreenViewer:
         self._cam_track.elevation = -15
         self._cam_track.azimuth = 90
 
+        self.label = ""
+
+    def set_label(self, label):
+        self.label = str(label) if label else ""
+
     def update_reference(self, root_pos: np.ndarray, root_rot_xyzw: np.ndarray, dof_pos: np.ndarray):
         mujoco = self._mujoco
         x, y, z, w = root_rot_xyzw
@@ -55,6 +60,10 @@ class SplitScreenViewer:
         font = cv2.FONT_HERSHEY_SIMPLEX
         cv2.putText(combined, "Reference", (10, 30), font, 0.9, (255, 255, 255), 2)
         cv2.putText(combined, "Tracker", (self.width + 10, 30), font, 0.9, (255, 255, 255), 2)
+        if self.label:
+            cv2.putText(
+                combined, self.label, (10, self.height - 15), font, 0.7, (0, 255, 255), 2
+            )
         cv2.imshow("HumaSkill", combined[:, :, ::-1])
         cv2.waitKey(1)
 

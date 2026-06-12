@@ -5,6 +5,7 @@ import numpy as np
 from middle_architecture.gmt_motion_adapter import get_kinematic_frame
 from middle_architecture.reference_ops import (
     _derive_frame_velocity,
+    _yaw_from_xyzw,
     compute_transition_metrics,
     concat_reference_frames,
     hermite_interpolate_reference_frames,
@@ -55,6 +56,16 @@ def _derive_angular_velocity_at_frame(motion, frame_idx: int):
 def _wxyz_from_xyzw(q):
     q = np.asarray(q, dtype=np.float32)
     return np.array([q[3], q[0], q[1], q[2]], dtype=np.float32)
+
+
+def _rotate_root_velocity_xy(velocity, yaw_delta):
+    out = np.asarray(velocity, dtype=np.float32).copy()
+    c = np.cos(yaw_delta)
+    s = np.sin(yaw_delta)
+    x, y = float(out[0]), float(out[1])
+    out[0] = c * x - s * y
+    out[1] = s * x + c * y
+    return out
 
 
 def _zero_velocity_state_from_kinematic_frame(frame: KinematicFrame) -> RobotState:
@@ -207,12 +218,15 @@ class TransitionBuilder:
         )
 
     def _build_interp_frames(self, spec, current_state, target_kinematic_frame, target_motion, target_frame_idx, num_frames, fps):
+        raw_target_frame = target_kinematic_frame
         target_kinematic_frame = reanchor_kinematic_frame(target_kinematic_frame, current_state)
         if spec.interpolation_mode == "hermite":
             start_lin_vel = getattr(current_state, "root_lin_vel", np.zeros(3, dtype=np.float32))
             start_dof_vel = getattr(current_state, "dof_vel", np.zeros(target_motion.dof_pos.shape[1], dtype=np.float32))
             start_ang_vel = getattr(current_state, "root_ang_vel", None)
             target_lin_vel, target_dof_vel = _derive_frame_velocity(target_motion, target_frame_idx)
+            yaw_delta = _yaw_from_xyzw(target_kinematic_frame.root_quat) - _yaw_from_xyzw(raw_target_frame.root_quat)
+            target_lin_vel = _rotate_root_velocity_xy(target_lin_vel, yaw_delta)
             target_ang_vel, _ = _derive_angular_velocity_at_frame(target_motion, target_frame_idx)
             return hermite_interpolate_reference_frames(
                 start=current_state,

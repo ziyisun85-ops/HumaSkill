@@ -1,3 +1,8 @@
+# Fallback/default transition specs only. At runtime the middle-layer
+# TransitionPlanner (configs/harness.yaml: transition_planner) decides the
+# effective transition from the live RobotState; e.g. it may replace the
+# walk_forward -> kick_leg bridge with a short Hermite interpolation when
+# the robot is already near stable stand_ready.
 task_id: demo_walk_kick_crouch_stand
 
 transitions:
