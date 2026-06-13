@@ -5,45 +5,43 @@ skills:
     default_end_frame: null
     fps: 30.0
     description: forward walking reference. For 10s, use first 300 frames at 30fps.
-
   kick_leg:
     motion_file: assets/motions/airkick_stand.pkl
     default_start_frame: 0
     default_end_frame: null
     fps: 30.0
-    description: standing air kick reference. airkick_stand.pkl and kick_walk.pkl both passed 2s smoke; airkick_stand is the default because the sequence bridges from walking to stable standing before kicking.
-
+    description: standing air kick reference. airkick_stand.pkl and kick_walk.pkl
+      both passed 2s smoke; airkick_stand is the default because the sequence bridges
+      from walking to stable standing before kicking.
   crouch_down:
     motion_file: assets/motions/squat.pkl
     default_start_frame: 0
     default_end_frame: null
     fps: 30.0
     description: squat or crouch-down reference. Full clip is retained for first integration.
-
   stand_up:
     motion_file: assets/motions/walk_stand.pkl
     default_start_frame: 0
     default_end_frame: null
     fps: 30.0
-    description: stable standing reference from walk_stand motion. Full clip is retained for first integration.
-
+    description: stable standing reference from walk_stand motion. Full clip is retained
+      for first integration.
   stable_stand_bridge:
     motion_file: assets/motions/walk_stand.pkl
     default_start_frame: 0
     default_end_frame: null
     fps: 30.0
     description: bridge reference used to return to a stable standing-like state.
-
   crouchwalk_bridge:
     motion_file: assets/motions/crouchwalk_stand.pkl
     default_start_frame: 0
     default_end_frame: null
     fps: 30.0
     description: bridge reference used around crouch-walk or crouch-related transitions.
-
   dad_dance_reference:
     motion_file: assets/motions/g1_23dof/B_DadDance_reference_qpos30.npy
     default_start_frame: 0
     default_end_frame: 250
     fps: 60.0
-    description: g1-moves B_DadDance NPZ reference exported to HumaSkill 23DoF qpos. First 250 frames are used for initial integration testing.
+    description: g1-moves B_DadDance NPZ reference exported to HumaSkill 23DoF qpos.
+      First 250 frames are used for initial integration testing.
