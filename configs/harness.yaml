@@ -1,31 +1,28 @@
 gmt:
-  root: G:/Code/Python/Paper-Reproduction/GMT/humanoid-general-motion-tracking
+  root: .
   robot: g1
   device: auto
-
 runtime:
   output_root: outputs
   stop_on_failure: true
   keep_single_episode: true
   require_m0_contract: true
-
 motion_assets:
   root: assets/motions
   valid_motion_files:
-    - airkick_stand.pkl
-    - basic_walk.pkl
-    - crouchwalk_stand.pkl
-    - dance.pkl
-    - dance_waltz.pkl
-    - kick_walk.pkl
-    - squat.pkl
-    - walk_stand.pkl
-
+  - airkick_stand.pkl
+  - basic_walk.pkl
+  - crouchwalk_stand.pkl
+  - dance.pkl
+  - dance_waltz.pkl
+  - kick_walk.pkl
+  - squat.pkl
+  - walk_stand.pkl
+  - g1_23dof/B_DadDance_reference_qpos30.npy
 sequence:
   default_task: configs/sequences/demo_walk_kick_crouch_stand.yaml
   transition: static_transition_config
   validator: reference_frames_shape_check
-
 reference_contract:
   status: completed_m0
   root_reference_mode: absolute_root
@@ -33,7 +30,6 @@ reference_contract:
   reanchor_yaw_only: true
   reference_velocity_policy: derive_like_motion_lib
   local_body_pos_policy: preserve_not_used_by_runner_obs
-
 runner_timing:
   control_dt: 0.02
   physics_dt: 0.001
@@ -42,23 +38,20 @@ runner_timing:
   reference_time_indexing: motionlib_loop_phase_blend
   obs_history: 20
   obs_normalization: explicit_scales_only
-
 fall_detection:
   enabled: true
-  min_root_height: 0.20
+  min_root_height: 0.2
   max_body_tilt: 120.0
-
 matching:
-  mode: pose_search         # "static" | "pose_search"
+  mode: pose_search
   search_window: 60
   score_weights:
     dof_pos: 1.0
     root_quat: 0.3
     velocity: 0.2
     root_height: 0.8
-
 platform:
   verified:
-    - linux
-    - m1_macos
+  - linux
+  - m1_macos
   windows_status: unverified

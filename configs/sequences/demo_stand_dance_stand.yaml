@@ -1,0 +1,10 @@
+task_id: demo_stand_dance_stand
+
+sequence:
+  - skill: stable_stand_bridge
+    duration: 2.0
+
+  - skill: dad_dance_reference
+
+  - skill: stable_stand_bridge
+    duration: 2.0

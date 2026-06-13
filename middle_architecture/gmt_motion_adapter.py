@@ -20,6 +20,10 @@ class GMTMotion:
     local_body_pos: Optional[np.ndarray]
     num_frames: int
 
+    @property
+    def root_quat(self) -> np.ndarray:
+        return self.root_rot
+
 
 def _resolve_motion_path(path: str) -> Path:
     candidate = Path(path)
@@ -35,8 +39,50 @@ def _resolve_motion_path(path: str) -> Path:
     raise FileNotFoundError(f"GMT motion file not found: {path}")
 
 
+def _normalize_quat_batch(quat: np.ndarray, source: Path) -> np.ndarray:
+    norms = np.linalg.norm(quat, axis=1, keepdims=True)
+    if np.any(norms < 1e-8):
+        raise ValueError(f"Motion {source} contains zero-length root quaternion")
+    if not np.allclose(norms, 1.0, atol=1e-5):
+        quat = quat / norms
+    return quat.astype(np.float32)
+
+
+def load_qpos_npy_motion(path: str, name: str = "") -> GMTMotion:
+    resolved = _resolve_motion_path(path)
+    qpos = np.load(resolved)
+    if qpos.ndim != 2 or qpos.shape[1] != 30:
+        raise ValueError(f"qpos npy motion must have shape (N, 30), got {qpos.shape}")
+    if not np.isfinite(qpos).all():
+        raise ValueError(f"Motion {resolved} contains NaN or Inf")
+
+    qpos = np.asarray(qpos, dtype=np.float32)
+    root_pos = qpos[:, 0:3]
+    root_quat_wxyz = _normalize_quat_batch(qpos[:, 3:7], resolved)
+    root_rot = root_quat_wxyz[:, [1, 2, 3, 0]]
+    dof_pos = qpos[:, 7:30]
+
+    motion_name = name or resolved.name
+    return GMTMotion(
+        name=motion_name,
+        path=str(resolved),
+        fps=60.0,
+        root_pos=root_pos,
+        root_rot=root_rot,
+        dof_pos=dof_pos,
+        local_body_pos=None,
+        num_frames=int(root_pos.shape[0]),
+    )
+
+
 def load_gmt_motion(path: str, name: str = "") -> GMTMotion:
     resolved = _resolve_motion_path(path)
+    suffix = resolved.suffix.lower()
+    if suffix == ".npy":
+        return load_qpos_npy_motion(str(resolved), name=name)
+    if suffix != ".pkl":
+        raise ValueError(f"Unsupported GMT motion file suffix for {resolved}: {resolved.suffix}")
+
     with open(resolved, "rb") as f:
         data = pickle.load(f)
 
@@ -95,7 +141,7 @@ def get_kinematic_frame(motion: GMTMotion, frame_index: int) -> KinematicFrame:
 
 
 class GmtMotionAdapter:
-    def __init__(self, motions_root: str):
+    def __init__(self, motions_root: str = "."):
         self.motions_root = Path(motions_root)
 
     def load(self, motion_file: str) -> GMTMotion:
@@ -106,3 +152,6 @@ class GmtMotionAdapter:
 
     def get_kinematic_frame(self, motion: GMTMotion, frame_index: int) -> KinematicFrame:
         return get_kinematic_frame(motion, frame_index)
+
+
+MotionAdapter = GmtMotionAdapter
